@@ -1,7 +1,11 @@
+import { Movie } from "../../types/movie.ts";
+
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
 
-export const fetchPopularMovies = async (page: number) => {
+export const fetchPopularMovies = async (
+  page: number,
+): Promise<Movie[] | undefined> => {
   try {
     const response = await fetch(
       `${apiUrl}/movie/popular?language=ko-KR&page=${page}`,
@@ -18,4 +22,6 @@ export const fetchPopularMovies = async (page: number) => {
   } catch (error) {
     alert(error);
   }
+
+  return undefined;
 };
