@@ -76,6 +76,13 @@ button.primary {
   height: 100%;
   z-index: 1;
 }
+.top-header-conatiner {
+  display: flex;
+  position: relative;
+  justify-content: start;
+  align-content: center;
+  z-index: 2;
+}
 
 .top-rated-container {
   user-select: none;
@@ -95,6 +102,35 @@ button.primary {
 
 h1.logo {
   font-size: 2rem;
+}
+
+.search {
+  display: flex;
+  margin: 0 auto;
+  align-self: center;
+  min-width: 500px;
+  border: 1px solid white;
+  border-radius: 32px;
+  padding: 6px 16px;
+}
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: white;
+}
+
+.search-input::placeholder {
+  color: white;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-button {
+  background: none;
 }
 
 .rate {

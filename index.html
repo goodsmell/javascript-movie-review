@@ -15,9 +15,22 @@
         <div class="background-container">
           <div class="overlay" aria-hidden="true"></div>
           <div class="top-rated-container">
-            <h1 class="logo">
-              <img src="./templates/images/logo.png" alt="MovieList" />
-            </h1>
+            <div class="top-header-conatiner">
+              <h1 class="logo">
+                <img src="./templates/images/logo.png" alt="MovieList" />
+              </h1>
+              <form class="search">
+                <input
+                  class="search-input"
+                  type="text"
+                  aria-label="검색"
+                  placeholder="검색어를 입력하세요"
+                />
+                <button class="search-button">
+                  <img src="./src/assets/serchIcon.png" alt="검색버튼" />
+                </button>
+              </form>
+            </div>
             <div class="top-rated-movie">
               <div class="rate">
                 <img src="./templates/images/star_empty.png" class="star" />
