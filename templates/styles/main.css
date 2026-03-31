@@ -163,6 +163,15 @@ span.rate-value {
   font-weight: bold;
 }
 
+.more-button {
+  width: 100%;
+  color: white;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  background-color: var(--color-lightblue-90);
+}
+
 footer.footer {
   min-height: 180px;
   background-color: var(--color-bluegray-80);
