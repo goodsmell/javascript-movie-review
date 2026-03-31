@@ -1,6 +1,7 @@
 import image from "../templates/images/star_filled.png";
 import { fetchPopularMovies } from "./api/fetchMovies";
-import { Movie } from "../types/movie";
+import { Movie, ThumbnailInfo } from "../types/movie";
+
 const popularMovies = await fetchPopularMovies(1);
 console.log(popularMovies);
 
@@ -63,7 +64,15 @@ const renderPopularMovies = (
   });
 };
 
-type ThumbnailInfo = Pick<Movie, "title" | "poster_path" | "vote_average">;
+const renderTopRatedMovie = (movie: ThumbnailInfo) => {
+  const rate = document.querySelector(".rate-value");
+  const title = document.querySelector(".title");
+  const backgroundImg: HTMLImageElement | null =
+    document.querySelector(".background-img");
+  title!.textContent = movie.title;
+  rate!.textContent = movie.vote_average.toString();
+  backgroundImg!.src = `${import.meta.env.VITE_TMDB_IMG_URL}${movie.poster_path}`;
+};
 
 const popularMovieThumbnailInfo: ThumbnailInfo[] = popularMovies!.map(
   (movie) => {
@@ -78,3 +87,4 @@ const popularMovieThumbnailInfo: ThumbnailInfo[] = popularMovies!.map(
 );
 
 renderPopularMovies(popularMovieThumbnailInfo);
+renderTopRatedMovie(popularMovieThumbnailInfo[0]);

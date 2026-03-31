@@ -14,3 +14,7 @@ export interface Movie {
   vote_average: number;
   vote_count: number;
 }
+export type ThumbnailInfo = Pick<
+  Movie,
+  "title" | "poster_path" | "vote_average"
+>;

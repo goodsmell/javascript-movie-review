@@ -13,24 +13,26 @@
     <div id="app">
       <header>
         <div class="background-container">
-          <div class="overlay" aria-hidden="true"></div>
+          <div class="overlay" aria-hidden="true">
+            <img class="background-img" />
+          </div>
+          <div class="top-header-conatiner">
+            <h1 class="logo">
+              <img src="./templates/images/logo.png" alt="MovieList" />
+            </h1>
+            <form class="search">
+              <input
+                class="search-input"
+                type="text"
+                aria-label="검색"
+                placeholder="검색어를 입력하세요"
+              />
+              <button class="search-button">
+                <img src="./src/assets/serchIcon.png" alt="검색버튼" />
+              </button>
+            </form>
+          </div>
           <div class="top-rated-container">
-            <div class="top-header-conatiner">
-              <h1 class="logo">
-                <img src="./templates/images/logo.png" alt="MovieList" />
-              </h1>
-              <form class="search">
-                <input
-                  class="search-input"
-                  type="text"
-                  aria-label="검색"
-                  placeholder="검색어를 입력하세요"
-                />
-                <button class="search-button">
-                  <img src="./src/assets/serchIcon.png" alt="검색버튼" />
-                </button>
-              </form>
-            </div>
             <div class="top-rated-movie">
               <div class="rate">
                 <img src="./templates/images/star_empty.png" class="star" />
@@ -68,26 +70,7 @@
         <main>
           <section>
             <h2>지금 인기 있는 영화</h2>
-            <ul class="thumbnail-list">
-              <li>
-                <div class="item">
-                  <img
-                    class="thumbnail"
-                    src="https://media.themoviedb.org/t/p/w440_and_h660_face/pmemGuhr450DK8GiTT44mgwWCP7.jpg"
-                    alt="인사이드 아웃 2"
-                  />
-                  <div class="item-desc">
-                    <p class="rate">
-                      <img
-                        src="./templates/images/star_empty.png"
-                        class="star"
-                      /><span>7.7</span>
-                    </p>
-                    <strong>인사이드 아웃 2</strong>
-                  </div>
-                </div>
-              </li>
-            </ul>
+            <ul class="thumbnail-list"></ul>
           </section>
         </main>
       </div>
