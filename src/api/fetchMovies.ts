@@ -25,3 +25,27 @@ export const fetchPopularMovies = async (
 
   return undefined;
 };
+
+export const fetchSearchedMovies = async (
+  page: number,
+  searchTitle: string,
+): Promise<Movie[] | undefined> => {
+  try {
+    const response = await fetch(
+      `${apiUrl}/search/movie?query=${searchTitle}&include_adult=false&language=ko-KR&page=${page}`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    alert(error);
+  }
+
+  return undefined;
+};

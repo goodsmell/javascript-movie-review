@@ -163,6 +163,30 @@ span.rate-value {
   font-weight: bold;
 }
 
+.section-title {
+  font-size: 36px;
+  font-weight: 600;
+}
+
+.not-search-found-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid white;
+}
+
+.not-search-found-img {
+  width: 72px;
+  aspect-ratio: 72/62;
+}
+
+.not-search-found-text {
+  font-size: 36px;
+  font-weight: 600;
+}
+
 .more-button {
   width: 100%;
   color: white;

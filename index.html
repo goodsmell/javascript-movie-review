@@ -12,25 +12,25 @@
   <body>
     <div id="app">
       <header>
+        <div class="top-header-conatiner">
+          <h1 class="logo">
+            <img src="./templates/images/logo.png" alt="MovieList" />
+          </h1>
+          <form class="search">
+            <input
+              class="search-input"
+              type="text"
+              aria-label="검색"
+              placeholder="검색어를 입력하세요"
+            />
+            <button class="search-button">
+              <img src="./src/assets/serchIcon.png" alt="검색버튼" />
+            </button>
+          </form>
+        </div>
         <div class="background-container">
           <div class="overlay" aria-hidden="true">
             <img class="background-img" />
-          </div>
-          <div class="top-header-conatiner">
-            <h1 class="logo">
-              <img src="./templates/images/logo.png" alt="MovieList" />
-            </h1>
-            <form class="search">
-              <input
-                class="search-input"
-                type="text"
-                aria-label="검색"
-                placeholder="검색어를 입력하세요"
-              />
-              <button class="search-button">
-                <img src="./src/assets/serchIcon.png" alt="검색버튼" />
-              </button>
-            </form>
           </div>
           <div class="top-rated-container">
             <div class="top-rated-movie">
@@ -68,8 +68,8 @@
           </li>
         </ul> -->
         <main>
-          <section>
-            <h2>지금 인기 있는 영화</h2>
+          <section class="section-container">
+            <h2 class="section-title">지금 인기 있는 영화</h2>
             <ul class="thumbnail-list"></ul>
           </section>
           <button class="more-button">더 보기</button>
