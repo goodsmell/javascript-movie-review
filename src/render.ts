@@ -22,3 +22,22 @@ export const renderTopRatedMovie = (movie: ThumbnailInfo) => {
   rate!.textContent = movie.vote_average.toString();
   backgroundImg!.src = `${import.meta.env.VITE_TMDB_IMG_URL}${movie.poster_path}`;
 };
+
+export const renderSkeleton = () => {
+  const thumbnailList = document.querySelector(".thumbnail-list");
+  const fragment = new DocumentFragment();
+  const skeleton = document.createElement("div");
+  skeleton.className = "movie-skeleton";
+
+  for (let i = 0; i < 20; i++) {
+    const newNode = skeleton.cloneNode(true);
+    fragment.appendChild(newNode);
+  }
+
+  thumbnailList!.appendChild(fragment);
+};
+
+export const removeSkeleton = () => {
+  const skeletonNodes = document.querySelectorAll(".movie-skeleton");
+  skeletonNodes.forEach((node) => node.remove());
+};

@@ -216,3 +216,9 @@ footer.footer {
 footer.footer p:not(:last-child) {
   margin-bottom: 8px;
 }
+
+.movie-skeleton {
+  width: 200px;
+  height: 364px;
+  background-color: gray;
+}

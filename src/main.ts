@@ -1,7 +1,12 @@
 import image from "../templates/images/star_filled.png";
 import { fetchPopularMovies, fetchSearchedMovies } from "./api/fetchMovies";
 import { ThumbnailInfo, Movie } from "../types/movie";
-import { renderPopularMovies, renderTopRatedMovie } from "./render";
+import {
+  renderPopularMovies,
+  renderTopRatedMovie,
+  renderSkeleton,
+  removeSkeleton,
+} from "./render";
 import searchNotFoundIcon from "./assets/searchNotFoundIcon.png";
 
 let popularMoviePage = 1;
@@ -10,16 +15,15 @@ let searchMoviePage = 1;
 const moreButton: HTMLButtonElement | null =
   document.querySelector(".more-button");
 
+// 스켈레톤 메서드
+renderSkeleton();
 const { movies: popularMovies, totalPages: popularTotalPages } =
   await fetchPopularMovies(popularMoviePage);
+removeSkeleton();
 
 if (popularMoviePage === popularTotalPages) {
   moreButton!.style.display = "none";
 }
-
-// 더보기가 사라져야 할 때
-// 1. 영화 목록이 존재하지 않을 때
-// 2. 다음 페이지가 없을 때
 
 addEventListener("load", () => {
   const app = document.querySelector("#app");
@@ -39,10 +43,12 @@ moreButton!.addEventListener("click", async (e) => {
 
   // 검색 결과 더보기
   if (searchValue!.length !== 0) {
+    renderSkeleton();
     const { movies, nowPage, totalPages } = await fetchSearchedMovies(
       ++searchMoviePage,
       searchInput!.value,
     );
+    removeSkeleton();
     movies!.forEach((movie) => {
       const thumbnail = makeMovieThumbnail(movie);
       thumbnailList?.appendChild(thumbnail);
@@ -54,9 +60,11 @@ moreButton!.addEventListener("click", async (e) => {
     }
   } else {
     // 인기 영화 더보기
+    renderSkeleton();
     const { movies, nowPage, totalPages } = await fetchPopularMovies(
       ++popularMoviePage,
     );
+    removeSkeleton();
     movies!.forEach((movie) => {
       const thumbnail = makeMovieThumbnail(movie);
       thumbnailList?.appendChild(thumbnail);
@@ -85,17 +93,12 @@ searchForm!.addEventListener("submit", async (e) => {
 
   const searchValue = searchInput?.value;
 
-  // 상단 컨테이너 숨기기
-
-  // 제목 변경
   sectionTitle!.textContent = `"${searchValue}"검색 결과`;
 
-  // 기존 리스트 초기화
   thumbnailList?.replaceChildren();
-
-  // 검색 데이터 가져오기
+  renderSkeleton();
   const { movies } = await fetchSearchedMovies(1, searchInput!.value);
-
+  removeSkeleton();
   if (movies!.length === 0) {
     const sectionContainer = document.querySelector(".section-container");
     const notSearchFoundContainer = document.createElement("div");
