@@ -12,7 +12,7 @@ a {
 body {
   font-size: 16px;
   color: var(--color-white);
-  background-color: var(--color-bluegray-80);
+  background-color: var(--color-bluegray-100);
 }
 
 #wrap,
@@ -23,7 +23,7 @@ section {
 }
 
 main {
-  margin: 64px 0;
+  margin-bottom: 64px;
 }
 
 .star {
@@ -60,16 +60,23 @@ button.primary {
 }
 
 .background-container {
+  display: flex;
   position: relative;
-  background-position: center center;
+  top: -100px;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  background-position: center;
   background-size: cover;
   height: 500px;
   padding: 48px;
+  z-index: -1;
 }
 
 .background-img {
   width: 100%;
-  object-fit: center;
+  height: 500px;
+  object-fit: cover;
 }
 
 .overlay {
@@ -82,14 +89,16 @@ button.primary {
   z-index: 1;
   overflow: hidden;
 }
+
 .top-header-conatiner {
   display: flex;
-  position: relative;
-  padding-left: 200px;
+  padding-left: 250px;
+  padding-top: 48px;
 
-  justify-content: start;
+  justify-content: center;
   align-content: center;
   z-index: 2;
+  width: 100%;
 }
 
 .top-rated-container {
@@ -97,11 +106,10 @@ button.primary {
   position: relative;
   z-index: 2;
   max-width: 1280px;
-  margin: 0 auto;
+  margin-left: 200px;
 }
 
 .top-rated-movie {
-  margin-top: 64px;
 }
 
 .top-rated-movie > *:not(:last-child) {
@@ -174,7 +182,6 @@ span.rate-value {
   gap: 16px;
   justify-content: center;
   align-items: center;
-  border: 1px solid white;
 }
 
 .not-search-found-img {

@@ -6,7 +6,20 @@ import searchNotFoundIcon from "./assets/searchNotFoundIcon.png";
 
 let popularMoviePage = 1;
 let searchMoviePage = 1;
-const popularMovies = await fetchPopularMovies(popularMoviePage);
+
+const moreButton: HTMLButtonElement | null =
+  document.querySelector(".more-button");
+
+const { movies: popularMovies, totalPages: popularTotalPages } =
+  await fetchPopularMovies(popularMoviePage);
+
+if (popularMoviePage === popularTotalPages) {
+  moreButton!.style.display = "none";
+}
+
+// 더보기가 사라져야 할 때
+// 1. 영화 목록이 존재하지 않을 때
+// 2. 다음 페이지가 없을 때
 
 addEventListener("load", () => {
   const app = document.querySelector("#app");
@@ -18,8 +31,6 @@ addEventListener("load", () => {
   }
 });
 
-const moreButton = document.querySelector(".more-button");
-
 moreButton!.addEventListener("click", async (e) => {
   const thumbnailList = document.querySelector(".thumbnail-list");
   const searchInput: HTMLInputElement | null =
@@ -28,7 +39,7 @@ moreButton!.addEventListener("click", async (e) => {
 
   // 검색 결과 더보기
   if (searchValue!.length !== 0) {
-    const movies = await fetchSearchedMovies(
+    const { movies, nowPage, totalPages } = await fetchSearchedMovies(
       ++searchMoviePage,
       searchInput!.value,
     );
@@ -36,13 +47,24 @@ moreButton!.addEventListener("click", async (e) => {
       const thumbnail = makeMovieThumbnail(movie);
       thumbnailList?.appendChild(thumbnail);
     });
+
+    // 뒤에 페이지 없으면 숨기기
+    if (nowPage === totalPages) {
+      moreButton!.style.display = "none";
+    }
   } else {
     // 인기 영화 더보기
-    const movies = await fetchPopularMovies(++popularMoviePage);
+    const { movies, nowPage, totalPages } = await fetchPopularMovies(
+      ++popularMoviePage,
+    );
     movies!.forEach((movie) => {
       const thumbnail = makeMovieThumbnail(movie);
       thumbnailList?.appendChild(thumbnail);
     });
+
+    if (nowPage === totalPages) {
+      moreButton!.style.display = "none";
+    }
   }
 });
 
@@ -55,6 +77,7 @@ searchForm!.addEventListener("submit", async (e) => {
   const backgroundConatiner: HTMLDivElement | null = document.querySelector(
     ".background-container",
   );
+
   backgroundConatiner!.style.display = "none";
 
   const sectionTitle = document.querySelector(".section-title");
@@ -71,7 +94,7 @@ searchForm!.addEventListener("submit", async (e) => {
   thumbnailList?.replaceChildren();
 
   // 검색 데이터 가져오기
-  const movies = await fetchSearchedMovies(1, searchInput!.value);
+  const { movies } = await fetchSearchedMovies(1, searchInput!.value);
 
   if (movies!.length === 0) {
     const sectionContainer = document.querySelector(".section-container");
@@ -87,6 +110,8 @@ searchForm!.addEventListener("submit", async (e) => {
     notSearchFoundContainer.appendChild(notSearchFoundImg);
     notSearchFoundContainer.appendChild(notSearchFoundText);
     sectionContainer?.appendChild(notSearchFoundContainer);
+
+    moreButton!.style.display = "none";
   }
   // 검색 결과 렌더링
   renderPopularMovies(extractThumbnailInfo(movies!));
@@ -147,5 +172,5 @@ const extractThumbnailInfo = (movies: Movie[]) => {
   });
 };
 
-renderPopularMovies(extractThumbnailInfo(popularMovies!));
-renderTopRatedMovie(extractThumbnailInfo(popularMovies!)[0]);
+renderPopularMovies(extractThumbnailInfo(popularMovies));
+renderTopRatedMovie(extractThumbnailInfo(popularMovies)[0]);

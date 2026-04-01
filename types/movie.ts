@@ -14,6 +14,13 @@ export interface Movie {
   vote_average: number;
   vote_count: number;
 }
+
+export interface MovieResponse {
+  movies: Movie[];
+  nowPage: number;
+  totalPages: number;
+}
+
 export type ThumbnailInfo = Pick<
   Movie,
   "title" | "poster_path" | "vote_average"
