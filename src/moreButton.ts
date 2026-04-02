@@ -25,7 +25,7 @@ class MoreButton {
   }
 
   bindEvent() {
-    this.#moreButton!.addEventListener("click", async (e) => {
+    this.#moreButton!.addEventListener("click", async () => {
       this.disable();
       const thumbnailList = document.querySelector(".thumbnail-list");
       const searchInput: HTMLInputElement | null =
