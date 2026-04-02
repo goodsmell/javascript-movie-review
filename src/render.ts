@@ -1,4 +1,4 @@
-import { makeMovieThumbnail } from "./main";
+import { makeMovieThumbnail } from "./thumnailManager";
 import { Movie, ThumbnailInfo } from "../types/movie";
 
 export const renderMoviesList = (
