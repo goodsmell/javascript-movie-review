@@ -16,6 +16,7 @@ const moreButton: HTMLButtonElement | null =
   document.querySelector(".more-button");
 
 // 스켈레톤 메서드
+
 renderSkeleton();
 const { movies: popularMovies, totalPages: popularTotalPages } =
   await fetchPopularMovies(popularMoviePage);
@@ -36,6 +37,8 @@ addEventListener("load", () => {
 });
 
 moreButton!.addEventListener("click", async (e) => {
+  moreButton!.disabled = true;
+  moreButton!.style.cursor = "not-allowed";
   const thumbnailList = document.querySelector(".thumbnail-list");
   const searchInput: HTMLInputElement | null =
     document.querySelector(".search-input");
@@ -74,6 +77,9 @@ moreButton!.addEventListener("click", async (e) => {
       moreButton!.style.display = "none";
     }
   }
+
+  moreButton!.disabled = false;
+  moreButton!.style.cursor = "pointer";
 });
 
 const searchForm = document.querySelector(".search");
