@@ -45,9 +45,7 @@ export const fetchSearchedMovies = async (
   );
 
   if (!response.ok) {
-    throw new Error(
-      `영화 검색 중 에러가 발생했습니다. (상태 코드: ${response.status})`,
-    );
+    throw new Error("영화 검색 중 에러가 발생했습니다.");
   }
 
   const data = await response.json();
