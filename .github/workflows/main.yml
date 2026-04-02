@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"] # main 브랜치에 코드가 push될 때마다 실행됩니다.
+  workflow_dispatch: # 수동으로도 실행할 수 있게 설정합니다.
+
+# GitHub Pages 배포를 위한 권한 설정
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 동시에 여러 배포가 진행될 경우, 이전 배포를 취소하고 최신 것만 유지합니다.
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # package.json의 engines 설정을 반영
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci # package-lock.json을 바탕으로 깨끗하게 설치합니다.
+
+      - name: Build
+        # Vite 빌드 시 환경변수를 주입합니다.
+        # package.json의 deploy 스크립트에 포함된 base 경로 옵션을 적용합니다.
+        run: npm run build -- --base=/javascript-movie-review/
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_ACCESS_TOKEN: ${{ secrets.VITE_ACCESS_TOKEN }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist # 빌드 결과물이 저장되는 폴더
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
