@@ -2,7 +2,7 @@ import image from "../templates/images/star_filled.png";
 import { fetchPopularMovies, fetchSearchedMovies } from "./api/fetchMovies";
 import { ThumbnailInfo, Movie } from "../types/movie";
 import {
-  renderPopularMovies,
+  renderMoviesList,
   renderTopRatedMovie,
   renderSkeleton,
   removeSkeleton,
@@ -88,19 +88,27 @@ searchForm!.addEventListener("submit", async (e) => {
 
   backgroundConatiner!.style.display = "none";
 
+  const sectionContainer = document.querySelector(".section-container");
   const sectionTitle = document.querySelector(".section-title");
   const thumbnailList = document.querySelector(".thumbnail-list");
+  const notSearchFoundContainer = document.querySelector(
+    ".not-search-found-container",
+  );
 
   const searchValue = searchInput?.value;
 
   sectionTitle!.textContent = `"${searchValue}"검색 결과`;
 
   thumbnailList?.replaceChildren();
+  if (notSearchFoundContainer) {
+    notSearchFoundContainer.remove();
+  }
+
   renderSkeleton();
   const { movies } = await fetchSearchedMovies(1, searchInput!.value);
   removeSkeleton();
+
   if (movies!.length === 0) {
-    const sectionContainer = document.querySelector(".section-container");
     const notSearchFoundContainer = document.createElement("div");
     const notSearchFoundImg = document.createElement("img");
     const notSearchFoundText = document.createElement("h2");
@@ -117,7 +125,13 @@ searchForm!.addEventListener("submit", async (e) => {
     moreButton!.style.display = "none";
   }
   // 검색 결과 렌더링
-  renderPopularMovies(extractThumbnailInfo(movies!));
+  renderMoviesList(extractThumbnailInfo(movies!));
+});
+
+const logo = document.querySelector(".logo");
+
+logo?.addEventListener("click", () => {
+  location.reload();
 });
 
 export const makeMovieThumbnail = (movie: ThumbnailInfo) => {
@@ -175,5 +189,5 @@ const extractThumbnailInfo = (movies: Movie[]) => {
   });
 };
 
-renderPopularMovies(extractThumbnailInfo(popularMovies));
+renderMoviesList(extractThumbnailInfo(popularMovies));
 renderTopRatedMovie(extractThumbnailInfo(popularMovies)[0]);

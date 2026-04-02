@@ -1,7 +1,7 @@
 import { makeMovieThumbnail } from "./main";
 import { Movie, ThumbnailInfo } from "../types/movie";
 
-export const renderPopularMovies = (
+export const renderMoviesList = (
   popularMovies: Pick<Movie, "title" | "poster_path" | "vote_average">[],
 ) => {
   const thumbnailList = document.querySelector(".thumbnail-list");
