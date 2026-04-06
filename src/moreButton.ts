@@ -27,44 +27,43 @@ class MoreButton {
   bindEvent() {
     this.#moreButton!.addEventListener("click", async () => {
       this.disable();
+
       const thumbnailList = document.querySelector(".thumbnail-list");
-      const searchInput: HTMLInputElement | null =
-        document.querySelector(".search-input");
-      const searchValue = searchInput?.value;
+      const searchInput =
+        document.querySelector<HTMLInputElement>(".search-input");
+      const searchValue = searchInput?.value ?? "";
 
-      if (searchValue!.length !== 0) {
+      try {
         renderSkeleton();
 
-        const { movies, nowPage, totalPages } = await fetchSearchedMovies(
-          ++PageStore.searchMoviePage,
-          searchInput!.value,
-        );
-        removeSkeleton();
+        let result;
+
+        if (searchValue.length !== 0) {
+          result = await fetchSearchedMovies(
+            ++PageStore.searchMoviePage,
+            searchValue,
+          );
+        } else {
+          result = await fetchPopularMovies(++PageStore.popularMoviePage);
+        }
+
+        const { movies, nowPage, totalPages } = result;
+
         movies!.forEach((movie) => {
           const thumbnail = makeMovieThumbnail(movie);
           thumbnailList?.appendChild(thumbnail);
         });
 
         if (nowPage === totalPages) {
-          this.#moreButton!.style.display = "none";
+          this.hide();
         }
-      } else {
-        renderSkeleton();
-        const { movies, nowPage, totalPages } = await fetchPopularMovies(
-          ++PageStore.popularMoviePage,
-        );
+      } catch (error) {
+        console.error("영화 데이터를 불러오는 중 에러 발생:", error);
+        alert("데이터를 불러오지 못했습니다");
+      } finally {
         removeSkeleton();
-        movies!.forEach((movie) => {
-          const thumbnail = makeMovieThumbnail(movie);
-          thumbnailList?.appendChild(thumbnail);
-        });
-
-        if (nowPage === totalPages) {
-          this.#moreButton!.style.display = "none";
-        }
+        this.able();
       }
-
-      this.able();
     });
   }
 }
