@@ -57,6 +57,12 @@ class SearchForm {
         }
 
         renderMoviesList(extractThumbnailInfo(movies));
+
+        if (nowPage === totalPages) {
+          moreButton!.style.display = "none";
+        } else {
+          moreButton!.style.display = "block";
+        }
       } catch (error) {
         console.error("검색 중 에러:", error);
         alert("검색 중 문제가 발생했어요");
