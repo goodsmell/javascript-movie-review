@@ -31,7 +31,7 @@ class SearchForm {
         ".not-search-found-container",
       );
 
-      const searchValue = this.#searchInput?.value;
+      const searchValue = this.#searchInput?.value ?? "";
 
       sectionTitle!.textContent = `"${searchValue}"검색 결과`;
 
@@ -39,18 +39,27 @@ class SearchForm {
       if (notSearchFoundContainer) {
         notSearchFoundContainer.remove();
       }
+      try {
+        renderSkeleton();
 
-      renderSkeleton();
-      const { movies } = await fetchSearchedMovies(1, this.#searchInput!.value);
-      removeSkeleton();
+        const { movies } = await fetchSearchedMovies(1, searchValue);
 
-      if (movies!.length === 0) {
-        const notSearchFoundContainer = makeNotFoundContainer();
-        sectionContainer?.appendChild(notSearchFoundContainer);
+        if (movies!.length === 0) {
+          const empty = makeNotFoundContainer();
+          sectionContainer?.appendChild(empty);
+          moreButton!.style.display = "none";
+          return;
+        }
+
+        renderMoviesList(extractThumbnailInfo(movies!));
+      } catch (error) {
+        console.error("검색 중 에러:", error);
+        alert("검색 중 문제가 발생했어요");
+
         moreButton!.style.display = "none";
+      } finally {
+        removeSkeleton();
       }
-
-      renderMoviesList(extractThumbnailInfo(movies!));
     });
   }
 }
