@@ -2,6 +2,7 @@ import { renderMoviesList, removeSkeleton, renderSkeleton } from "./render";
 import { fetchSearchedMovies } from "./api/fetchMovies";
 import { makeNotFoundContainer } from "./makeNotFoundContainer";
 import { extractThumbnailInfo } from "./thumnailManager";
+import PageStore from "./store";
 
 class SearchForm {
   #searchForm: HTMLFormElement | null;
@@ -42,20 +43,23 @@ class SearchForm {
       try {
         renderSkeleton();
 
-        const { movies } = await fetchSearchedMovies(1, searchValue);
+        PageStore.searchMoviePage = 1;
+        const { movies, nowPage, totalPages } = await fetchSearchedMovies(
+          1,
+          searchValue,
+        );
 
-        if (movies!.length === 0) {
+        if (movies.length === 0) {
           const empty = makeNotFoundContainer();
           sectionContainer?.appendChild(empty);
           moreButton!.style.display = "none";
           return;
         }
 
-        renderMoviesList(extractThumbnailInfo(movies!));
+        renderMoviesList(extractThumbnailInfo(movies));
       } catch (error) {
         console.error("검색 중 에러:", error);
         alert("검색 중 문제가 발생했어요");
-
         moreButton!.style.display = "none";
       } finally {
         removeSkeleton();
