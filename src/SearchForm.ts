@@ -1,7 +1,7 @@
 import { renderMoviesList, removeSkeleton, renderSkeleton } from "./render";
 import { fetchSearchedMovies } from "./api/fetchMovies";
 import { makeNotFoundContainer } from "./makeNotFoundContainer";
-import { extractThumbnailInfo } from "./thumnailManager";
+
 import PageStore from "./store";
 
 class SearchForm {
@@ -81,7 +81,7 @@ class SearchForm {
           return;
         }
 
-        renderMoviesList(extractThumbnailInfo(movies));
+        renderMoviesList(movies);
 
         if (nowPage === totalPages) {
           moreButton.style.display = "none";

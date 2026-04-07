@@ -1,8 +1,7 @@
-import { removeSkeleton, renderSkeleton } from "./render";
+import { removeSkeleton, renderSkeleton, renderMoviesList } from "./render";
 import { fetchSearchedMovies, fetchPopularMovies } from "./api/fetchMovies";
-import { makeMovieThumbnail } from "./thumnailManager";
 import PageStore from "./store";
-import { Movie } from "../types/movie";
+
 
 class MoreButton {
   #moreButton: HTMLButtonElement;
@@ -39,14 +38,6 @@ class MoreButton {
     this.#moreButton.addEventListener("click", async () => this.handleClick());
   }
 
-  private renderMovieList(movies: Movie[]) {
-    const thumbnailList = document.querySelector(".thumbnail-list");
-    movies.forEach((movie) => {
-      const thumbnail = makeMovieThumbnail(movie);
-      thumbnailList?.appendChild(thumbnail);
-    });
-  }
-
   private async loadMorePopularMovies() {
     const nextPage = PageStore.page + 1;
     const result = await fetchPopularMovies(nextPage);
@@ -54,7 +45,7 @@ class MoreButton {
     PageStore.page = result.nowPage;
     PageStore.totalPages = result.totalPages;
 
-    this.renderMovieList(result.movies);
+    renderMoviesList(result.movies);
 
     if (PageStore.page >= PageStore.totalPages) {
       this.hide();
@@ -68,7 +59,7 @@ class MoreButton {
     PageStore.page = result.nowPage;
     PageStore.totalPages = result.totalPages;
 
-    this.renderMovieList(result.movies);
+    renderMoviesList(result.movies);
     if (PageStore.page >= PageStore.totalPages) {
       this.hide();
     }

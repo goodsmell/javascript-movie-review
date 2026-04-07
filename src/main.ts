@@ -1,6 +1,5 @@
 import image from "../templates/images/star_filled.png";
 import { fetchPopularMovies } from "./api/fetchMovies";
-import { extractThumbnailInfo } from "./thumnailManager";
 import Logo from "./Logo";
 import {
   renderMoviesList,
@@ -38,16 +37,14 @@ async function renderPopularMovies() {
     PageStore.page = nowPage;
     PageStore.totalPages = totalPages;
 
-    const thumbnails = extractThumbnailInfo(movies);
-
     if (PageStore.page === PageStore.totalPages) {
       moreButton.hide();
     } else {
       moreButton.show();
     }
 
-    renderMoviesList(thumbnails);
-    renderTopRatedMovie(thumbnails[0]);
+    renderMoviesList(movies);
+    renderTopRatedMovie(movies[0]);
   } catch (error) {
     alert("영화 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
   } finally {

@@ -1,16 +1,20 @@
 import { makeMovieThumbnail } from "./thumnailManager";
-import { Movie, ThumbnailInfo } from "../types/movie";
+import { ThumbnailInfo, Movie } from "../types/movie";
 import fallbackImg from "./assets/movie_fallback_image.svg";
+import { extractThumbnailInfo } from "./thumnailManager";
 
-export const renderMoviesList = (
-  popularMovies: Pick<Movie, "title" | "poster_path" | "vote_average">[],
-) => {
+export const renderMoviesList = (movies: Movie[]) => {
   const thumbnailList = document.querySelector(".thumbnail-list");
 
-  popularMovies.forEach((movie) => {
-    const movieThumbnail = makeMovieThumbnail(movie);
+  if (!thumbnailList) {
+    throw new Error("thumbnail-list 요소를 찾을 수 없습니다.");
+  }
 
-    thumbnailList?.appendChild(movieThumbnail);
+  const thumbnailInfos = extractThumbnailInfo(movies);
+
+  thumbnailInfos.forEach((movie) => {
+    const movieThumbnail = makeMovieThumbnail(movie);
+    thumbnailList.appendChild(movieThumbnail);
   });
 };
 
