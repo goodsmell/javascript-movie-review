@@ -17,16 +17,16 @@ export const fetchPopularMovies = async (
     },
   );
 
-  if (!response.ok) {
-    throw new Error("영화를 불러오는 데 실패했습니다.");
+  try {
+    const data = await response.json();
+    return {
+      movies: data.results,
+      nowPage: data.page,
+      totalPages: data.total_pages,
+    };
+  } catch {
+    throw new Error("서버 응답을 처리할 수 없습니다.");
   }
-
-  const data = await response.json();
-  return {
-    movies: data.results,
-    nowPage: data.page,
-    totalPages: data.total_pages,
-  };
 };
 
 export const fetchSearchedMovies = async (
@@ -48,10 +48,14 @@ export const fetchSearchedMovies = async (
     throw new Error("영화 검색 중 에러가 발생했습니다.");
   }
 
-  const data = await response.json();
-  return {
-    movies: data.results,
-    nowPage: data.page,
-    totalPages: data.total_pages,
-  };
+  try {
+    const data = await response.json();
+    return {
+      movies: data.results,
+      nowPage: data.page,
+      totalPages: data.total_pages,
+    };
+  } catch {
+    throw new Error("서버 응답을 처리할 수 없습니다.");
+  }
 };
