@@ -1,5 +1,6 @@
 import { makeMovieThumbnail } from "./thumnailManager";
 import { Movie, ThumbnailInfo } from "../types/movie";
+import fallbackImg from "./assets/movie_fallback_image.svg";
 
 export const renderMoviesList = (
   popularMovies: Pick<Movie, "title" | "poster_path" | "vote_average">[],
@@ -24,7 +25,9 @@ export const renderTopRatedMovie = (movie: ThumbnailInfo) => {
   }
   title.textContent = movie.title;
   rate.textContent = movie.vote_average.toString();
-  backgroundImg.src = `${import.meta.env.VITE_TMDB_IMG_URL}${movie.poster_path}`;
+  backgroundImg.src = movie.poster_path
+    ? `${import.meta.env.VITE_TMDB_IMG_URL}${movie.poster_path}`
+    : fallbackImg;
 };
 
 export const renderSkeleton = () => {

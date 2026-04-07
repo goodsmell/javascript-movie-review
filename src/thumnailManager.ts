@@ -1,4 +1,5 @@
 import { ThumbnailInfo, Movie } from "../types/movie";
+import fallbackImg from "./assets/movie_fallback_image.svg";
 
 export const extractThumbnailInfo = (movies: Movie[]) => {
   return movies!.map((movie) => {
@@ -21,7 +22,9 @@ export const makeMovieThumbnail = (movie: ThumbnailInfo) => {
 
   const thumbnail = document.createElement("img");
   thumbnail.className = "thumbnail";
-  thumbnail.src = `${import.meta.env.VITE_TMDB_IMG_URL}${movie.poster_path}`;
+  thumbnail.src = movie.poster_path
+    ? `${import.meta.env.VITE_TMDB_IMG_URL}${movie.poster_path}`
+    : fallbackImg;
   thumbnail.alt = movie.title;
 
   const itemDesc = document.createElement("div");
