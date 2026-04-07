@@ -2,6 +2,7 @@ import { removeSkeleton, renderSkeleton } from "./render";
 import { fetchSearchedMovies, fetchPopularMovies } from "./api/fetchMovies";
 import { makeMovieThumbnail } from "./thumnailManager";
 import PageStore from "./store";
+import { Movie } from "../types/movie";
 
 class MoreButton {
   #moreButton: HTMLButtonElement;
@@ -25,52 +26,65 @@ class MoreButton {
     this.#moreButton.style.cursor = "not-allowed";
   }
 
-  able() {
+  enable() {
     this.#moreButton.disabled = false;
     this.#moreButton.style.cursor = "pointer";
   }
 
+  // 더보기버튼 클릭 함수
   bindEvent() {
-    this.#moreButton.addEventListener("click", async () => {
-      this.disable();
+    this.#moreButton.addEventListener("click", async () => this.handleClick());
+  }
 
-      const thumbnailList = document.querySelector(".thumbnail-list");
-      const searchInput =
-        document.querySelector<HTMLInputElement>(".search-input");
-      const searchValue = searchInput?.value ?? "";
-
-      try {
-        renderSkeleton();
-
-        let result;
-
-        if (searchValue.length !== 0) {
-          result = await fetchSearchedMovies(
-            ++PageStore.searchMoviePage,
-            searchValue,
-          );
-        } else {
-          result = await fetchPopularMovies(++PageStore.popularMoviePage);
-        }
-
-        const { movies, nowPage, totalPages } = result;
-
-        movies.forEach((movie) => {
-          const thumbnail = makeMovieThumbnail(movie);
-          thumbnailList?.appendChild(thumbnail);
-        });
-
-        if (nowPage === totalPages) {
-          this.hide();
-        }
-      } catch (error) {
-        console.error("영화 데이터를 불러오는 중 에러 발생:", error);
-        alert("데이터를 불러오지 못했습니다");
-      } finally {
-        removeSkeleton();
-        this.able();
-      }
+  private renderMovieList(movies: Movie[]) {
+    const thumbnailList = document.querySelector(".thumbnail-list");
+    movies.forEach((movie) => {
+      const thumbnail = makeMovieThumbnail(movie);
+      thumbnailList?.appendChild(thumbnail);
     });
+  }
+
+  private async loadMorePopularMovies() {
+    const result = await fetchPopularMovies(++PageStore.popularMoviePage);
+
+    this.renderMovieList(result.movies);
+
+    if (result.nowPage === result.totalPages) {
+      this.hide();
+    }
+  }
+
+  private async loadMoreSearchResults(searchValue: string) {
+    const result = await fetchSearchedMovies(
+      ++PageStore.searchMoviePage,
+      searchValue,
+    );
+    this.renderMovieList(result.movies);
+    if (result.nowPage === result.totalPages) this.hide();
+  }
+
+  private getSearchValue() {
+    const searchInput =
+      document.querySelector<HTMLInputElement>(".search-input");
+    return searchInput?.value ?? "";
+  }
+
+  private async handleClick() {
+    this.disable();
+
+    try {
+      renderSkeleton();
+      const searchValue = this.getSearchValue();
+      searchValue
+        ? await this.loadMoreSearchResults(searchValue)
+        : await this.loadMorePopularMovies();
+    } catch (error) {
+      console.error("영화 데이터를 불러오는 중 에러 발생:", error);
+      alert("데이터를 불러오지 못했습니다");
+    } finally {
+      removeSkeleton();
+      this.enable();
+    }
   }
 }
 
