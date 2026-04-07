@@ -5,20 +5,48 @@ import { makeNotFoundContainer } from "./makeNotFoundContainer";
 import PageStore from "./store";
 
 class SearchForm {
-  #searchForm: HTMLFormElement;
-  #searchInput: HTMLInputElement;
+  #search: {
+    form: HTMLFormElement;
+    input: HTMLInputElement;
+  };
+
+  #view: {
+    backgroundContainer: HTMLDivElement;
+    sectionContainer: HTMLElement;
+    sectionTitle: HTMLElement;
+    thumbnailList: HTMLElement;
+  };
 
   constructor() {
-    const searchForm = document.querySelector<HTMLFormElement>(".search");
-    const searchInput =
-      document.querySelector<HTMLInputElement>(".search-input");
+    const form = document.querySelector<HTMLFormElement>(".search");
+    const input = document.querySelector<HTMLInputElement>(".search-input");
+    const backgroundContainer = document.querySelector<HTMLDivElement>(
+      ".background-container",
+    );
+    const sectionContainer =
+      document.querySelector<HTMLElement>(".section-container");
+    const sectionTitle = document.querySelector<HTMLElement>(".section-title");
+    const thumbnailList =
+      document.querySelector<HTMLElement>(".thumbnail-list");
 
-    if (!searchForm || !searchInput) {
-      throw new Error("검색 폼 요소를 찾을 수 없습니다.");
+    if (
+      !form ||
+      !input ||
+      !backgroundContainer ||
+      !sectionContainer ||
+      !sectionTitle ||
+      !thumbnailList
+    ) {
+      throw new Error("필수 UI 요소를 찾을 수 없습니다.");
     }
 
-    this.#searchForm = searchForm;
-    this.#searchInput = searchInput;
+    this.#search = { form, input };
+    this.#view = {
+      backgroundContainer,
+      sectionContainer,
+      sectionTitle,
+      thumbnailList,
+    };
   }
 
   bindEvent() {
@@ -27,42 +55,24 @@ class SearchForm {
 
     if (!moreButton) throw new Error("more-button 요소를 찾을 수 없습니다.");
 
-    this.#searchForm.addEventListener("submit", async (e) => {
+    this.#search.form?.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const backgroundContainer: HTMLDivElement | null = document.querySelector(
-        ".background-container",
-      );
-      const sectionContainer = document.querySelector(".section-container");
-      const sectionTitle = document.querySelector(".section-title");
-      const thumbnailList = document.querySelector(".thumbnail-list");
-      const notSearchFoundContainer = document.querySelector(
-        ".not-search-found-container",
-      );
-
-      const searchValue = this.#searchInput.value ?? "";
+      const searchValue = this.#search.input?.value ?? "";
 
       PageStore.mode = "search";
       PageStore.query = searchValue;
       PageStore.page = 1;
 
-      if (
-        !backgroundContainer ||
-        !sectionTitle ||
-        !sectionContainer ||
-        !thumbnailList
-      ) {
-        throw new Error("필수 UI 요소를 찾을 수 없습니다.");
-      }
+      this.#view.backgroundContainer.style.display = "none";
+      this.#view.sectionTitle.textContent = `"${searchValue}" 검색 결과`;
+      this.#view.thumbnailList.replaceChildren();
 
-      backgroundContainer.style.display = "none";
+      const notSearchFoundContainer = document.querySelector(
+        ".not-search-found-container",
+      );
+      notSearchFoundContainer?.remove();
 
-      sectionTitle.textContent = `"${searchValue}"검색 결과`;
-
-      thumbnailList.replaceChildren();
-      if (notSearchFoundContainer) {
-        notSearchFoundContainer.remove();
-      }
       try {
         renderSkeleton();
 
@@ -76,7 +86,7 @@ class SearchForm {
 
         if (movies.length === 0) {
           const empty = makeNotFoundContainer();
-          sectionContainer.appendChild(empty);
+          this.#view.sectionContainer.appendChild(empty);
           moreButton.style.display = "none";
           return;
         }
