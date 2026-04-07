@@ -5,26 +5,34 @@ import { extractThumbnailInfo } from "./thumnailManager";
 import PageStore from "./store";
 
 class SearchForm {
-  #searchForm: HTMLFormElement | null;
-  #searchInput: HTMLInputElement | null;
+  #searchForm: HTMLFormElement;
+  #searchInput: HTMLInputElement;
 
   constructor() {
-    this.#searchForm = document.querySelector(".search");
-    this.#searchInput = document.querySelector(".search-input");
+    const searchForm = document.querySelector<HTMLFormElement>(".search");
+    const searchInput =
+      document.querySelector<HTMLInputElement>(".search-input");
+
+    if (!searchForm || !searchInput) {
+      throw new Error("검색 폼 요소를 찾을 수 없습니다.");
+    }
+
+    this.#searchForm = searchForm;
+    this.#searchInput = searchInput;
   }
 
   bindEvent() {
     const moreButton: HTMLButtonElement | null =
       document.querySelector(".more-button");
-    this.#searchForm!.addEventListener("submit", async (e) => {
+
+    if (!moreButton) throw new Error("more-button 요소를 찾을 수 없습니다.");
+
+    this.#searchForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const backgroundConatiner: HTMLDivElement | null = document.querySelector(
+      const backgroundContainer: HTMLDivElement | null = document.querySelector(
         ".background-container",
       );
-
-      backgroundConatiner!.style.display = "none";
-
       const sectionContainer = document.querySelector(".section-container");
       const sectionTitle = document.querySelector(".section-title");
       const thumbnailList = document.querySelector(".thumbnail-list");
@@ -32,11 +40,22 @@ class SearchForm {
         ".not-search-found-container",
       );
 
-      const searchValue = this.#searchInput?.value ?? "";
+      const searchValue = this.#searchInput.value ?? "";
 
-      sectionTitle!.textContent = `"${searchValue}"검색 결과`;
+      if (
+        !backgroundContainer ||
+        !sectionTitle ||
+        !sectionContainer ||
+        !thumbnailList
+      ) {
+        throw new Error("필수 UI 요소를 찾을 수 없습니다.");
+      }
 
-      thumbnailList?.replaceChildren();
+      backgroundContainer.style.display = "none";
+
+      sectionTitle.textContent = `"${searchValue}"검색 결과`;
+
+      thumbnailList.replaceChildren();
       if (notSearchFoundContainer) {
         notSearchFoundContainer.remove();
       }
@@ -51,22 +70,22 @@ class SearchForm {
 
         if (movies.length === 0) {
           const empty = makeNotFoundContainer();
-          sectionContainer?.appendChild(empty);
-          moreButton!.style.display = "none";
+          sectionContainer.appendChild(empty);
+          moreButton.style.display = "none";
           return;
         }
 
         renderMoviesList(extractThumbnailInfo(movies));
 
         if (nowPage === totalPages) {
-          moreButton!.style.display = "none";
+          moreButton.style.display = "none";
         } else {
-          moreButton!.style.display = "block";
+          moreButton.style.display = "block";
         }
       } catch (error) {
         console.error("검색 중 에러:", error);
         alert("검색 중 문제가 발생했어요");
-        moreButton!.style.display = "none";
+        moreButton.style.display = "none";
       } finally {
         removeSkeleton();
       }

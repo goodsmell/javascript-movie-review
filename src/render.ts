@@ -18,9 +18,13 @@ export const renderTopRatedMovie = (movie: ThumbnailInfo) => {
   const title = document.querySelector(".title");
   const backgroundImg: HTMLImageElement | null =
     document.querySelector(".background-img");
-  title!.textContent = movie.title;
-  rate!.textContent = movie.vote_average.toString();
-  backgroundImg!.src = `${import.meta.env.VITE_TMDB_IMG_URL}${movie.poster_path}`;
+
+  if (!title || !rate || !backgroundImg) {
+    throw new Error("최고 평점 영화 렌더링에 필요한 요소를 찾을 수 없습니다.");
+  }
+  title.textContent = movie.title;
+  rate.textContent = movie.vote_average.toString();
+  backgroundImg.src = `${import.meta.env.VITE_TMDB_IMG_URL}${movie.poster_path}`;
 };
 
 export const renderSkeleton = () => {
@@ -34,7 +38,10 @@ export const renderSkeleton = () => {
     fragment.appendChild(newNode);
   }
 
-  thumbnailList!.appendChild(fragment);
+  if (!thumbnailList) {
+    throw new Error("thumbnail-list 요소를 찾을 수 없습니다.");
+  }
+  thumbnailList.appendChild(fragment);
 };
 
 export const removeSkeleton = () => {

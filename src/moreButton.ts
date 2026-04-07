@@ -4,28 +4,34 @@ import { makeMovieThumbnail } from "./thumnailManager";
 import PageStore from "./store";
 
 class MoreButton {
-  #moreButton: HTMLButtonElement | null;
+  #moreButton: HTMLButtonElement;
 
   constructor() {
-    this.#moreButton = document.querySelector(".more-button");
+    const moreButton =
+      document.querySelector<HTMLButtonElement>(".more-button");
+    if (!moreButton) {
+      throw new Error("더보기 버튼 요소를 찾을 수 없습니다.");
+    }
+
+    this.#moreButton = moreButton;
   }
 
   hide() {
-    this.#moreButton!.style.display = "none";
+    this.#moreButton.style.display = "none";
   }
 
   disable() {
-    this.#moreButton!.disabled = true;
-    this.#moreButton!.style.cursor = "not-allowed";
+    this.#moreButton.disabled = true;
+    this.#moreButton.style.cursor = "not-allowed";
   }
 
   able() {
-    this.#moreButton!.disabled = false;
-    this.#moreButton!.style.cursor = "pointer";
+    this.#moreButton.disabled = false;
+    this.#moreButton.style.cursor = "pointer";
   }
 
   bindEvent() {
-    this.#moreButton!.addEventListener("click", async () => {
+    this.#moreButton.addEventListener("click", async () => {
       this.disable();
 
       const thumbnailList = document.querySelector(".thumbnail-list");
@@ -49,7 +55,7 @@ class MoreButton {
 
         const { movies, nowPage, totalPages } = result;
 
-        movies!.forEach((movie) => {
+        movies.forEach((movie) => {
           const thumbnail = makeMovieThumbnail(movie);
           thumbnailList?.appendChild(thumbnail);
         });
