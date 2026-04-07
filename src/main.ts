@@ -17,26 +17,42 @@ const moreButton = new MoreButton();
 moreButton.bindEvent();
 const searchForm = new SearchForm();
 searchForm.bindEvent();
-const logo = new Logo();
+const logo = new Logo(async () => {
+  await renderPopularMovies();
+});
 logo.bindEvent();
+await renderPopularMovies();
 
-// 초기화면 렌더링
-try {
-  renderSkeleton();
-  const { movies: popularMovies, totalPages: popularTotalPages } =
-    await fetchPopularMovies(PageStore.popularMoviePage);
-  removeSkeleton();
+async function renderPopularMovies() {
+  try {
+    PageStore.mode = "popular";
+    PageStore.query = "";
+    PageStore.page = 1;
 
-  if (PageStore.popularMoviePage === popularTotalPages) {
-    moreButton.hide();
+    renderSkeleton();
+
+    const { movies, nowPage, totalPages } = await fetchPopularMovies(
+      PageStore.page,
+    );
+
+    PageStore.page = nowPage;
+    PageStore.totalPages = totalPages;
+
+    const thumbnails = extractThumbnailInfo(movies);
+
+    if (PageStore.page === PageStore.totalPages) {
+      moreButton.hide();
+    } else {
+      moreButton.show();
+    }
+
+    renderMoviesList(thumbnails);
+    renderTopRatedMovie(thumbnails[0]);
+  } catch (error) {
+    alert("영화 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
+  } finally {
+    removeSkeleton();
   }
-
-  renderMoviesList(extractThumbnailInfo(popularMovies));
-  renderTopRatedMovie(extractThumbnailInfo(popularMovies)[0]);
-} catch (error) {
-  alert("영화 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
-} finally {
-  removeSkeleton();
 }
 
 addEventListener("load", () => {

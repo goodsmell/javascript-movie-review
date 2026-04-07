@@ -42,6 +42,10 @@ class SearchForm {
 
       const searchValue = this.#searchInput.value ?? "";
 
+      PageStore.mode = "search";
+      PageStore.query = searchValue;
+      PageStore.page = 1;
+
       if (
         !backgroundContainer ||
         !sectionTitle ||
@@ -62,11 +66,13 @@ class SearchForm {
       try {
         renderSkeleton();
 
-        PageStore.searchMoviePage = 1;
         const { movies, nowPage, totalPages } = await fetchSearchedMovies(
           1,
           searchValue,
         );
+
+        PageStore.page = nowPage;
+        PageStore.totalPages = totalPages;
 
         if (movies.length === 0) {
           const empty = makeNotFoundContainer();

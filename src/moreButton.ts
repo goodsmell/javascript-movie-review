@@ -31,7 +31,10 @@ class MoreButton {
     this.#moreButton.style.cursor = "pointer";
   }
 
-  // 더보기버튼 클릭 함수
+  show() {
+    this.#moreButton.style.display = "block";
+  }
+
   bindEvent() {
     this.#moreButton.addEventListener("click", async () => this.handleClick());
   }
@@ -45,28 +48,30 @@ class MoreButton {
   }
 
   private async loadMorePopularMovies() {
-    const result = await fetchPopularMovies(++PageStore.popularMoviePage);
+    const nextPage = PageStore.page + 1;
+    const result = await fetchPopularMovies(nextPage);
+
+    PageStore.page = result.nowPage;
+    PageStore.totalPages = result.totalPages;
 
     this.renderMovieList(result.movies);
 
-    if (result.nowPage === result.totalPages) {
+    if (PageStore.page >= PageStore.totalPages) {
       this.hide();
     }
   }
 
-  private async loadMoreSearchResults(searchValue: string) {
-    const result = await fetchSearchedMovies(
-      ++PageStore.searchMoviePage,
-      searchValue,
-    );
-    this.renderMovieList(result.movies);
-    if (result.nowPage === result.totalPages) this.hide();
-  }
+  private async loadMoreSearchResults() {
+    const nextPage = PageStore.page + 1;
+    const result = await fetchSearchedMovies(nextPage, PageStore.query);
 
-  private getSearchValue() {
-    const searchInput =
-      document.querySelector<HTMLInputElement>(".search-input");
-    return searchInput?.value ?? "";
+    PageStore.page = result.nowPage;
+    PageStore.totalPages = result.totalPages;
+
+    this.renderMovieList(result.movies);
+    if (PageStore.page >= PageStore.totalPages) {
+      this.hide();
+    }
   }
 
   private async handleClick() {
@@ -74,10 +79,12 @@ class MoreButton {
 
     try {
       renderSkeleton();
-      const searchValue = this.getSearchValue();
-      searchValue
-        ? await this.loadMoreSearchResults(searchValue)
-        : await this.loadMorePopularMovies();
+
+      if (PageStore.mode === "search") {
+        await this.loadMoreSearchResults();
+      } else {
+        await this.loadMorePopularMovies();
+      }
     } catch (error) {
       console.error("영화 데이터를 불러오는 중 에러 발생:", error);
       alert("데이터를 불러오지 못했습니다");

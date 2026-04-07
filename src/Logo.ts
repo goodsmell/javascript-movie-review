@@ -1,14 +1,12 @@
 class Logo {
   #logo;
 
-  constructor() {
+  constructor(private onReset: () => void) {
     this.#logo = document.querySelector(".logo");
   }
 
   bindEvent() {
-    this.#logo?.addEventListener("click", () => {
-      location.reload();
-    });
+    this.#logo?.addEventListener("click", this.onReset);
   }
 }
 
