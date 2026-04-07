@@ -1,7 +1,6 @@
 import { renderMoviesList, removeSkeleton, renderSkeleton } from "./render";
 import { fetchSearchedMovies } from "./api/fetchMovies";
 import { makeNotFoundContainer } from "./makeNotFoundContainer";
-
 import PageStore from "./store";
 
 class SearchForm {
@@ -15,6 +14,7 @@ class SearchForm {
     sectionContainer: HTMLElement;
     sectionTitle: HTMLElement;
     thumbnailList: HTMLElement;
+    moreButton: HTMLButtonElement;
   };
 
   constructor() {
@@ -28,6 +28,8 @@ class SearchForm {
     const sectionTitle = document.querySelector<HTMLElement>(".section-title");
     const thumbnailList =
       document.querySelector<HTMLElement>(".thumbnail-list");
+    const moreButton =
+      document.querySelector<HTMLButtonElement>(".more-button");
 
     if (
       !form ||
@@ -35,7 +37,8 @@ class SearchForm {
       !backgroundContainer ||
       !sectionContainer ||
       !sectionTitle ||
-      !thumbnailList
+      !thumbnailList ||
+      !moreButton
     ) {
       throw new Error("필수 UI 요소를 찾을 수 없습니다.");
     }
@@ -46,66 +49,103 @@ class SearchForm {
       sectionContainer,
       sectionTitle,
       thumbnailList,
+      moreButton,
     };
   }
 
   bindEvent() {
-    const moreButton: HTMLButtonElement | null =
-      document.querySelector(".more-button");
-
-    if (!moreButton) throw new Error("more-button 요소를 찾을 수 없습니다.");
-
-    this.#search.form?.addEventListener("submit", async (e) => {
+    this.#search.form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      const searchValue = this.#search.input?.value ?? "";
-
-      PageStore.mode = "search";
-      PageStore.query = searchValue;
-      PageStore.page = 1;
-
-      this.#view.backgroundContainer.style.display = "none";
-      this.#view.sectionTitle.textContent = `"${searchValue}" 검색 결과`;
-      this.#view.thumbnailList.replaceChildren();
-
-      const notSearchFoundContainer = document.querySelector(
-        ".not-search-found-container",
-      );
-      notSearchFoundContainer?.remove();
-
-      try {
-        renderSkeleton();
-
-        const { movies, nowPage, totalPages } = await fetchSearchedMovies(
-          1,
-          searchValue,
-        );
-
-        PageStore.page = nowPage;
-        PageStore.totalPages = totalPages;
-
-        if (movies.length === 0) {
-          const empty = makeNotFoundContainer();
-          this.#view.sectionContainer.appendChild(empty);
-          moreButton.style.display = "none";
-          return;
-        }
-
-        renderMoviesList(movies);
-
-        if (nowPage === totalPages) {
-          moreButton.style.display = "none";
-        } else {
-          moreButton.style.display = "block";
-        }
-      } catch (error) {
-        console.error("검색 중 에러:", error);
-        alert("검색 중 문제가 발생했어요");
-        moreButton.style.display = "none";
-      } finally {
-        removeSkeleton();
-      }
+      await this.handleSubmit();
     });
+  }
+
+  private async handleSubmit() {
+    const searchValue = this.#search.input.value.trim();
+
+    if (!searchValue) {
+      return;
+    }
+
+    this.updateSearchState(searchValue);
+    this.prepareSearchView(searchValue);
+
+    try {
+      renderSkeleton();
+
+      const { movies, nowPage, totalPages } = await fetchSearchedMovies(
+        1,
+        searchValue,
+      );
+
+      this.updatePagination(nowPage, totalPages);
+
+      if (movies.length === 0) {
+        this.renderEmptyResult();
+        return;
+      }
+
+      renderMoviesList(movies);
+      this.toggleMoreButton(nowPage < totalPages);
+    } catch (error) {
+      this.handleSearchError(error);
+    } finally {
+      removeSkeleton();
+    }
+  }
+
+  private updateSearchState(searchValue: string) {
+    PageStore.mode = "search";
+    PageStore.query = searchValue;
+    PageStore.page = 1;
+  }
+
+  private updatePagination(nowPage: number, totalPages: number) {
+    PageStore.page = nowPage;
+    PageStore.totalPages = totalPages;
+  }
+
+  private prepareSearchView(searchValue: string) {
+    this.#view.backgroundContainer.style.display = "none";
+    this.#view.sectionTitle.textContent = `"${searchValue}" 검색 결과`;
+    this.#view.thumbnailList.replaceChildren();
+    this.removeNotFoundContainer();
+  }
+
+  private renderEmptyResult() {
+    const empty = makeNotFoundContainer();
+    this.#view.sectionContainer.appendChild(empty);
+    this.hideMoreButton();
+  }
+
+  private removeNotFoundContainer() {
+    const notSearchFoundContainer = document.querySelector(
+      ".not-search-found-container",
+    );
+    notSearchFoundContainer?.remove();
+  }
+
+  private toggleMoreButton(shouldShow: boolean) {
+    if (shouldShow) {
+      this.showMoreButton();
+      return;
+    }
+
+    this.hideMoreButton();
+  }
+
+  private showMoreButton() {
+    this.#view.moreButton.style.display = "block";
+  }
+
+  private hideMoreButton() {
+    this.#view.moreButton.style.display = "none";
+  }
+
+  private handleSearchError(error: unknown) {
+    console.error("검색 중 에러:", error);
+    alert("검색 중 문제가 발생했어요");
+    this.hideMoreButton();
   }
 }
 
