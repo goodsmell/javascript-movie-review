@@ -57,7 +57,7 @@ class MoreButton {
         : await fetchPopularMovies(nextPage);
 
     PageStore.setPagination(result.nowPage, result.totalPages);
-    renderMoviesList(result.movies);
+    renderMoviesList(result.movies, { append: true });
     this.syncVisibility();
   }
 

@@ -82,7 +82,7 @@ class SearchForm {
         return;
       }
 
-      renderMoviesList(movies);
+      renderMoviesList(movies, { append: false });
       this.moreButton.syncVisibility();
     } catch (error) {
       this.handleSearchError(error);
