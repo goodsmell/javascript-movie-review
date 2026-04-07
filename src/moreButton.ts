@@ -2,13 +2,13 @@ import { removeSkeleton, renderSkeleton, renderMoviesList } from "./render";
 import { fetchSearchedMovies, fetchPopularMovies } from "./api/fetchMovies";
 import PageStore from "./store";
 
-
 class MoreButton {
   #moreButton: HTMLButtonElement;
 
   constructor() {
     const moreButton =
       document.querySelector<HTMLButtonElement>(".more-button");
+
     if (!moreButton) {
       throw new Error("더보기 버튼 요소를 찾을 수 없습니다.");
     }
@@ -16,8 +16,25 @@ class MoreButton {
     this.#moreButton = moreButton;
   }
 
+  bindEvent() {
+    this.#moreButton.addEventListener("click", async () => this.handleClick());
+  }
+
+  syncVisibility() {
+    if (PageStore.page >= PageStore.totalPages) {
+      this.hide();
+      return;
+    }
+
+    this.show();
+  }
+
   hide() {
     this.#moreButton.style.display = "none";
+  }
+
+  show() {
+    this.#moreButton.style.display = "block";
   }
 
   disable() {
@@ -30,39 +47,17 @@ class MoreButton {
     this.#moreButton.style.cursor = "pointer";
   }
 
-  show() {
-    this.#moreButton.style.display = "block";
-  }
-
-  bindEvent() {
-    this.#moreButton.addEventListener("click", async () => this.handleClick());
-  }
-
-  private async loadMorePopularMovies() {
+  private async loadMoreMovies() {
     const nextPage = PageStore.page + 1;
-    const result = await fetchPopularMovies(nextPage);
 
-    PageStore.page = result.nowPage;
-    PageStore.totalPages = result.totalPages;
+    const result =
+      PageStore.mode === "search"
+        ? await fetchSearchedMovies(nextPage, PageStore.query)
+        : await fetchPopularMovies(nextPage);
 
+    PageStore.setPagination(result.nowPage, result.totalPages);
     renderMoviesList(result.movies);
-
-    if (PageStore.page >= PageStore.totalPages) {
-      this.hide();
-    }
-  }
-
-  private async loadMoreSearchResults() {
-    const nextPage = PageStore.page + 1;
-    const result = await fetchSearchedMovies(nextPage, PageStore.query);
-
-    PageStore.page = result.nowPage;
-    PageStore.totalPages = result.totalPages;
-
-    renderMoviesList(result.movies);
-    if (PageStore.page >= PageStore.totalPages) {
-      this.hide();
-    }
+    this.syncVisibility();
   }
 
   private async handleClick() {
@@ -70,12 +65,7 @@ class MoreButton {
 
     try {
       renderSkeleton();
-
-      if (PageStore.mode === "search") {
-        await this.loadMoreSearchResults();
-      } else {
-        await this.loadMorePopularMovies();
-      }
+      await this.loadMoreMovies();
     } catch (error) {
       console.error("영화 데이터를 불러오는 중 에러 발생:", error);
       alert("데이터를 불러오지 못했습니다");

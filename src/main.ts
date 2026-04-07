@@ -12,7 +12,7 @@ import PageStore from "./store";
 import MoreButton from "./moreButton";
 
 const moreButton = new MoreButton();
-const searchForm = new SearchForm();
+const searchForm = new SearchForm(moreButton);
 const logo = new Logo(resetToPopularView);
 
 function bindComponentEvents() {

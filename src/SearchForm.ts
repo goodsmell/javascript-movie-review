@@ -2,6 +2,7 @@ import { renderMoviesList, removeSkeleton, renderSkeleton } from "./render";
 import { fetchSearchedMovies } from "./api/fetchMovies";
 import { makeNotFoundContainer } from "./makeNotFoundContainer";
 import PageStore from "./store";
+import MoreButton from "./moreButton";
 
 class SearchForm {
   #search: {
@@ -14,10 +15,9 @@ class SearchForm {
     sectionContainer: HTMLElement;
     sectionTitle: HTMLElement;
     thumbnailList: HTMLElement;
-    moreButton: HTMLButtonElement;
   };
 
-  constructor() {
+  constructor(private moreButton: MoreButton) {
     const form = document.querySelector<HTMLFormElement>(".search");
     const input = document.querySelector<HTMLInputElement>(".search-input");
     const backgroundContainer = document.querySelector<HTMLDivElement>(
@@ -25,11 +25,10 @@ class SearchForm {
     );
     const sectionContainer =
       document.querySelector<HTMLElement>(".section-container");
-    const sectionTitle = document.querySelector<HTMLElement>(".section-title");
+    const sectionTitle =
+      document.querySelector<HTMLElement>(".section-title");
     const thumbnailList =
       document.querySelector<HTMLElement>(".thumbnail-list");
-    const moreButton =
-      document.querySelector<HTMLButtonElement>(".more-button");
 
     if (
       !form ||
@@ -37,8 +36,7 @@ class SearchForm {
       !backgroundContainer ||
       !sectionContainer ||
       !sectionTitle ||
-      !thumbnailList ||
-      !moreButton
+      !thumbnailList
     ) {
       throw new Error("필수 UI 요소를 찾을 수 없습니다.");
     }
@@ -49,7 +47,6 @@ class SearchForm {
       sectionContainer,
       sectionTitle,
       thumbnailList,
-      moreButton,
     };
   }
 
@@ -67,7 +64,7 @@ class SearchForm {
       return;
     }
 
-    this.updateSearchState(searchValue);
+    PageStore.setSearchMode(searchValue);
     this.prepareSearchView(searchValue);
 
     try {
@@ -78,7 +75,7 @@ class SearchForm {
         searchValue,
       );
 
-      this.updatePagination(nowPage, totalPages);
+      PageStore.setPagination(nowPage, totalPages);
 
       if (movies.length === 0) {
         this.renderEmptyResult();
@@ -86,23 +83,12 @@ class SearchForm {
       }
 
       renderMoviesList(movies);
-      this.toggleMoreButton(nowPage < totalPages);
+      this.moreButton.syncVisibility();
     } catch (error) {
       this.handleSearchError(error);
     } finally {
       removeSkeleton();
     }
-  }
-
-  private updateSearchState(searchValue: string) {
-    PageStore.mode = "search";
-    PageStore.query = searchValue;
-    PageStore.page = 1;
-  }
-
-  private updatePagination(nowPage: number, totalPages: number) {
-    PageStore.page = nowPage;
-    PageStore.totalPages = totalPages;
   }
 
   private prepareSearchView(searchValue: string) {
@@ -115,7 +101,7 @@ class SearchForm {
   private renderEmptyResult() {
     const empty = makeNotFoundContainer();
     this.#view.sectionContainer.appendChild(empty);
-    this.hideMoreButton();
+    this.moreButton.hide();
   }
 
   private removeNotFoundContainer() {
@@ -125,27 +111,10 @@ class SearchForm {
     notSearchFoundContainer?.remove();
   }
 
-  private toggleMoreButton(shouldShow: boolean) {
-    if (shouldShow) {
-      this.showMoreButton();
-      return;
-    }
-
-    this.hideMoreButton();
-  }
-
-  private showMoreButton() {
-    this.#view.moreButton.style.display = "block";
-  }
-
-  private hideMoreButton() {
-    this.#view.moreButton.style.display = "none";
-  }
-
   private handleSearchError(error: unknown) {
     console.error("검색 중 에러:", error);
     alert("검색 중 문제가 발생했어요");
-    this.hideMoreButton();
+    this.moreButton.hide();
   }
 }
 
