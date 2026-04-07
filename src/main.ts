@@ -1,5 +1,5 @@
-import image from "../templates/images/star_filled.png";
 import { fetchPopularMovies } from "./api/fetchMovies";
+import { extractThumbnailInfo } from "./thumnailManager";
 import Logo from "./Logo";
 import {
   renderMoviesList,
@@ -11,23 +11,41 @@ import SearchForm from "./SearchForm";
 import PageStore from "./store";
 import MoreButton from "./moreButton";
 
-// 이벤트 바인딩
 const moreButton = new MoreButton();
-moreButton.bindEvent();
 const searchForm = new SearchForm();
-searchForm.bindEvent();
-const logo = new Logo(async () => {
-  await renderPopularMovies();
-});
-logo.bindEvent();
-await renderPopularMovies();
+const logo = new Logo(resetToPopularView);
 
-async function renderPopularMovies() {
+function bindComponentEvents() {
+  moreButton.bindEvent();
+  searchForm.bindEvent();
+  logo.bindEvent();
+}
+
+function restorePopularViewUI() {
+  const backgroundContainer = document.querySelector(".background-container");
+  const sectionTitle = document.querySelector(".section-title");
+  const notFoundContainer = document.querySelector(
+    ".not-search-found-container",
+  );
+
+  if (backgroundContainer instanceof HTMLDivElement) {
+    backgroundContainer.style.display = "flex";
+  }
+
+  if (sectionTitle) {
+    sectionTitle.textContent = "지금 가장 인기 있는 영화";
+  }
+
+  notFoundContainer?.remove();
+}
+
+async function resetToPopularView() {
   try {
     PageStore.mode = "popular";
     PageStore.query = "";
     PageStore.page = 1;
 
+    restorePopularViewUI();
     renderSkeleton();
 
     const { movies, nowPage, totalPages } = await fetchPopularMovies(
@@ -37,6 +55,8 @@ async function renderPopularMovies() {
     PageStore.page = nowPage;
     PageStore.totalPages = totalPages;
 
+    const thumbnails = extractThumbnailInfo(movies);
+
     if (PageStore.page === PageStore.totalPages) {
       moreButton.hide();
     } else {
@@ -44,7 +64,7 @@ async function renderPopularMovies() {
     }
 
     renderMoviesList(movies);
-    renderTopRatedMovie(movies[0]);
+    renderTopRatedMovie(thumbnails[0]);
   } catch (error) {
     alert("영화 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
   } finally {
@@ -52,12 +72,9 @@ async function renderPopularMovies() {
   }
 }
 
-addEventListener("load", () => {
-  const app = document.querySelector("#app");
-  const buttonImage = document.createElement("img");
-  buttonImage.src = image;
+async function bootstrap() {
+  bindComponentEvents();
+  await resetToPopularView();
+}
 
-  if (app) {
-    app.appendChild(buttonImage);
-  }
-});
+await bootstrap();
