@@ -1,6 +1,7 @@
-import { removeSkeleton, renderSkeleton, renderMoviesList } from "./render";
-import { fetchSearchedMovies, fetchPopularMovies } from "./api/fetchMovies";
-import PageStore from "./store";
+import { removeSkeleton, renderSkeleton } from "../render/skeleton";
+import { renderMoviesList } from "../render/movieList";
+import { fetchSearchedMovies, fetchPopularMovies } from "../api/fetchMovies";
+import PageStore from "../store";
 
 class MoreButton {
   #moreButton: HTMLButtonElement;

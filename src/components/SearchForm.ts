@@ -1,7 +1,8 @@
-import { renderMoviesList, removeSkeleton, renderSkeleton } from "./render";
-import { fetchSearchedMovies } from "./api/fetchMovies";
-import { makeNotFoundContainer } from "./makeNotFoundContainer";
-import PageStore from "./store";
+import { removeSkeleton, renderSkeleton } from "../render/skeleton";
+import { renderMoviesList } from "../render/movieList";
+import { fetchSearchedMovies } from "../api/fetchMovies";
+import { createNotFoundElement } from "../render/createNotFoundElement";
+import PageStore from "../store";
 import MoreButton from "./moreButton";
 
 class SearchForm {
@@ -25,8 +26,7 @@ class SearchForm {
     );
     const sectionContainer =
       document.querySelector<HTMLElement>(".section-container");
-    const sectionTitle =
-      document.querySelector<HTMLElement>(".section-title");
+    const sectionTitle = document.querySelector<HTMLElement>(".section-title");
     const thumbnailList =
       document.querySelector<HTMLElement>(".thumbnail-list");
 
@@ -99,7 +99,7 @@ class SearchForm {
   }
 
   private renderEmptyResult() {
-    const empty = makeNotFoundContainer();
+    const empty = createNotFoundElement();
     this.#view.sectionContainer.appendChild(empty);
     this.moreButton.hide();
   }

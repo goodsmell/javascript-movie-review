@@ -1,15 +1,14 @@
 import { fetchPopularMovies } from "./api/fetchMovies";
-import { extractThumbnailInfo } from "./thumnailManager";
-import Logo from "./Logo";
-import {
-  renderMoviesList,
-  renderTopRatedMovie,
-  renderSkeleton,
-  removeSkeleton,
-} from "./render";
-import SearchForm from "./SearchForm";
+import { mapToThumbnailInfo } from "./utils/mapToThumbnailInfo";
+import { renderSkeleton, removeSkeleton } from "./render/skeleton";
+import { renderMoviesList } from "./render/movieList";
+import { renderTopRatedMovie } from "./render/banner";
+
+import SearchForm from "./components/SearchForm";
+import MoreButton from "./components/moreButton";
+import Logo from "./components/Logo";
+
 import PageStore from "./store";
-import MoreButton from "./moreButton";
 
 const moreButton = new MoreButton();
 const searchForm = new SearchForm(moreButton);
@@ -55,7 +54,7 @@ async function resetToPopularView() {
     PageStore.page = nowPage;
     PageStore.totalPages = totalPages;
 
-    const thumbnails = extractThumbnailInfo(movies);
+    const thumbnails = mapToThumbnailInfo(movies);
 
     if (PageStore.page === PageStore.totalPages) {
       moreButton.hide();

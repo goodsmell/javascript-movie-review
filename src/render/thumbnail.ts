@@ -1,19 +1,7 @@
-import { ThumbnailInfo, Movie } from "../types/movie";
-import fallbackImg from "./assets/movie_fallback_image.svg";
+import { ThumbnailInfo } from "../../types/movie";
+import fallbackImg from "../assets/movie_fallback_image.svg";
 
-export const extractThumbnailInfo = (movies: Movie[]) => {
-  return movies!.map((movie) => {
-    const thumbnailInfo: ThumbnailInfo = {
-      title: movie.title,
-      poster_path: movie.poster_path,
-      vote_average: movie.vote_average,
-    };
-
-    return thumbnailInfo;
-  });
-};
-
-export const makeMovieThumbnail = (movie: ThumbnailInfo) => {
+export const createMovieThumbnail = (movie: ThumbnailInfo) => {
   const fragment = document.createDocumentFragment();
   const list = document.createElement("li");
 
