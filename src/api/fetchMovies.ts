@@ -1,24 +1,27 @@
-import { MovieResponse } from "../../types/movie.ts";
+import { MovieResponse } from "../../types/movie";
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
 
-export const fetchPopularMovies = async (
-  page: number,
+const REQUEST_OPTIONS = {
+  method: "GET",
+  headers: {
+    accept: "application/json",
+    Authorization: `Bearer ${accessToken}`,
+  },
+};
+
+const parseMovieResponse = async (
+  response: Response,
+  errorMessage: string,
 ): Promise<MovieResponse> => {
-  const response = await fetch(
-    `${apiUrl}/movie/popular?language=ko-KR&page=${page}`,
-    {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
+  if (!response.ok) {
+    throw new Error(errorMessage);
+  }
 
   try {
     const data = await response.json();
+
     return {
       movies: data.results,
       nowPage: data.page,
@@ -29,33 +32,29 @@ export const fetchPopularMovies = async (
   }
 };
 
+const requestMovieResponse = async (
+  url: string,
+  errorMessage: string,
+): Promise<MovieResponse> => {
+  const response = await fetch(url, REQUEST_OPTIONS);
+  return parseMovieResponse(response, errorMessage);
+};
+
+export const fetchPopularMovies = async (
+  page: number,
+): Promise<MovieResponse> => {
+  return requestMovieResponse(
+    `${apiUrl}/movie/popular?language=ko-KR&page=${page}`,
+    "영화 목록을 불러오는 중 에러가 발생했습니다.",
+  );
+};
+
 export const fetchSearchedMovies = async (
   page: number,
   searchTitle: string,
 ): Promise<MovieResponse> => {
-  const response = await fetch(
+  return requestMovieResponse(
     `${apiUrl}/search/movie?query=${encodeURIComponent(searchTitle)}&include_adult=false&language=ko-KR&page=${page}`,
-    {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    "영화 검색 중 에러가 발생했습니다.",
   );
-
-  if (!response.ok) {
-    throw new Error("영화 검색 중 에러가 발생했습니다.");
-  }
-
-  try {
-    const data = await response.json();
-    return {
-      movies: data.results,
-      nowPage: data.page,
-      totalPages: data.total_pages,
-    };
-  } catch {
-    throw new Error("서버 응답을 처리할 수 없습니다.");
-  }
 };
