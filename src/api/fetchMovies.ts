@@ -44,7 +44,7 @@ export const fetchPopularMovies = async (
   page: number,
 ): Promise<MovieResponse> => {
   return requestMovieResponse(
-    `${apiUrl}/movie/popular?language=ko-KR&page=${page}`,
+    `${apiUrl}/movie/popular?language=Ko&region=ko-KR&page=${page}`,
     "영화 목록을 불러오는 중 에러가 발생했습니다.",
   );
 };
