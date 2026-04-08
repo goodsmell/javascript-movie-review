@@ -57,7 +57,7 @@ const requestMovieResponse = async (url, errorMessage) => {
 };
 const fetchPopularMovies = async (page) => {
   return requestMovieResponse(
-    `${apiUrl}/movie/popular?language=ko-KR&page=${page}`,
+    `${apiUrl}/movie/popular?language=Ko&region=ko-KR&page=${page}`,
     "영화 목록을 불러오는 중 에러가 발생했습니다."
   );
 };
@@ -224,7 +224,7 @@ class SearchForm {
       renderSkeleton();
       const { movies, nowPage, totalPages } = await fetchSearchedMovies(
         1,
-        searchValue
+        PageStore.query
       );
       PageStore.setPagination(nowPage, totalPages);
       if (movies.length === 0) {
