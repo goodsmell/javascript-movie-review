@@ -72,7 +72,7 @@ class SearchForm {
 
       const { movies, nowPage, totalPages } = await fetchSearchedMovies(
         1,
-        searchValue,
+        PageStore.query,
       );
 
       PageStore.setPagination(nowPage, totalPages);

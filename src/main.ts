@@ -1,4 +1,4 @@
-import { fetchPopularMovies } from "./api/fetchMovies";
+import { fetchMoviesDetail, fetchPopularMovies } from "./api/fetchMovies";
 import { mapToThumbnailInfo } from "./utils/mapToThumbnailInfo";
 import { renderSkeleton, removeSkeleton } from "./render/skeleton";
 import { renderMoviesList } from "./render/movieList";
@@ -7,17 +7,37 @@ import { renderTopRatedMovie } from "./render/banner";
 import SearchForm from "./components/SearchForm";
 import MoreButton from "./components/moreButton";
 import Logo from "./components/Logo";
+import Modal from "./components/modal";
 
 import PageStore from "./store";
+import MovieItem from "./components/MovieItem";
 
 const moreButton = new MoreButton();
 const searchForm = new SearchForm(moreButton);
 const logo = new Logo(resetToPopularView);
+const modal = new Modal();
+const movieItem = new MovieItem(async (movieId: string) => {
+  try {
+    const movieDetail = await fetchMoviesDetail(Number(movieId));
+
+    modal.open({
+      title: movieDetail.title,
+      overview: movieDetail.overview,
+      voteAverage: movieDetail.vote_average,
+      posterPath: `https://image.tmdb.org/t/p/original/${movieDetail.poster_path}`,
+      categoryText: `${movieDetail.release_date} · ${movieDetail.genres.map((genre: { name: string }) => genre.name).join(", ")}`,
+    });
+  } catch (error) {
+    throw new Error("dd");
+  }
+});
 
 function bindComponentEvents() {
   moreButton.bindEvent();
   searchForm.bindEvent();
   logo.bindEvent();
+  movieItem.bindEvent();
+  modal.bindEvent();
 }
 
 function restorePopularViewUI() {
