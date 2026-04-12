@@ -61,7 +61,7 @@ class Modal {
     });
   }
 
-  open(movie: {
+  fill(movie: {
     title: string;
     overview: string;
     voteAverage: number;
@@ -72,11 +72,21 @@ class Modal {
     this.#category.textContent = movie.categoryText;
     this.#rate.textContent = movie.voteAverage.toString();
     this.#detail.textContent = movie.overview;
+    this.#image.style.opacity = "0";
     this.#image.src = movie.posterPath;
+    this.#image.onload = () => {
+      this.#image.style.opacity = "1";
+    };
     this.#image.alt = movie.title;
+  }
 
+  openEmpty() {
+    this.#title.textContent = "";
+    this.#category.textContent = "";
+    this.#rate.textContent = "";
+    this.#detail.textContent = "";
+    this.#image.style.opacity = "0";
     this.#modal.classList.add("active");
-
     document.body.style.overflow = "hidden";
   }
 

@@ -19,9 +19,10 @@ const modal = new Modal();
 const review = new Review(new LocalRatingStorage());
 const movieItem = new MovieItem(async (movieId: string) => {
   try {
+    modal.openEmpty();
     const movieDetail = await fetchMoviesDetail(Number(movieId));
 
-    modal.open({
+    modal.fill({
       title: movieDetail.title,
       overview: movieDetail.overview,
       voteAverage: movieDetail.vote_average,
