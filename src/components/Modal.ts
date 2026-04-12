@@ -76,10 +76,13 @@ class Modal {
     this.#image.alt = movie.title;
 
     this.#modal.classList.add("active");
+
+    document.body.style.overflow = "hidden";
   }
 
   close() {
     this.#modal.classList.remove("active");
+    document.body.style.overflow = "";
   }
 }
 export default Modal;
