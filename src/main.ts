@@ -5,7 +5,6 @@ import { renderMoviesList } from "./render/movieList";
 import { renderTopRatedMovie } from "./render/banner";
 import { getYear } from "./utils/getYear";
 import SearchForm from "./components/SearchForm";
-import MoreButton from "./components/moreButton";
 import Logo from "./components/Logo";
 import Modal from "./components/modal";
 import Review from "./components/review";
@@ -14,8 +13,7 @@ import { LocalRatingStorage } from "./storage/RatingStorage";
 import PageStore from "./store";
 import MovieItem from "./components/MovieItem";
 
-const moreButton = new MoreButton();
-const searchForm = new SearchForm(moreButton);
+const searchForm = new SearchForm();
 const logo = new Logo(resetToPopularView);
 const modal = new Modal();
 const review = new Review(new LocalRatingStorage());
@@ -37,7 +35,6 @@ const movieItem = new MovieItem(async (movieId: string) => {
 });
 
 function bindComponentEvents() {
-  moreButton.bindEvent();
   searchForm.bindEvent();
   logo.bindEvent();
   movieItem.bindEvent();
@@ -72,28 +69,39 @@ async function resetToPopularView() {
     restorePopularViewUI();
     renderSkeleton();
 
-    const { movies, nowPage, totalPages } = await fetchPopularMovies(
-      PageStore.page,
-    );
-
-    PageStore.page = nowPage;
-    PageStore.totalPages = totalPages;
-
+    const movies = await onLoadNextPage(PageStore.page);
     const thumbnails = mapToThumbnailInfo(movies);
 
-    if (PageStore.page === PageStore.totalPages) {
-      moreButton.hide();
-    } else {
-      moreButton.show();
-    }
+    const loadMore = async () => {
+      try {
+        renderSkeleton();
+        const movies = await onLoadNextPage(PageStore.page + 1);
+        removeSkeleton();
+        if (!movies.length) return;
+        renderMoviesList(movies, { append: true }, loadMore);
+      } finally {
+        removeSkeleton();
+      }
+    };
 
-    renderMoviesList(movies, { append: false });
+    renderMoviesList(movies, { append: false }, loadMore);
+
     renderTopRatedMovie(thumbnails[0]);
   } catch (error) {
+    console.log(error);
     alert("영화 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
   } finally {
     removeSkeleton();
   }
+}
+
+async function onLoadNextPage(page: number) {
+  const { movies, nowPage, totalPages } = await fetchPopularMovies(page);
+
+  PageStore.page = nowPage;
+  PageStore.totalPages = totalPages;
+
+  return movies;
 }
 
 async function bootstrap() {

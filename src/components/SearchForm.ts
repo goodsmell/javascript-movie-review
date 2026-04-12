@@ -3,7 +3,6 @@ import { renderMoviesList } from "../render/movieList";
 import { fetchSearchedMovies } from "../api/fetchMovies";
 import { createNotFoundElement } from "../render/createNotFoundElement";
 import PageStore from "../store";
-import MoreButton from "./moreButton";
 
 class SearchForm {
   #search: {
@@ -18,7 +17,7 @@ class SearchForm {
     thumbnailList: HTMLElement;
   };
 
-  constructor(private moreButton: MoreButton) {
+  constructor() {
     const form = document.querySelector<HTMLFormElement>(".search");
     const input = document.querySelector<HTMLInputElement>(".search-input");
     const backgroundContainer = document.querySelector<HTMLDivElement>(
@@ -69,26 +68,41 @@ class SearchForm {
 
     try {
       renderSkeleton();
-
-      const { movies, nowPage, totalPages } = await fetchSearchedMovies(
-        1,
-        PageStore.query,
-      );
-
-      PageStore.setPagination(nowPage, totalPages);
-
+      const movies = await this.lodeList(1);
       if (movies.length === 0) {
         this.renderEmptyResult();
         return;
       }
 
-      renderMoviesList(movies, { append: false });
-      this.moreButton.syncVisibility();
+      const loadMore = async () => {
+        try {
+          renderSkeleton();
+          const movies = await this.lodeList(PageStore.page + 1);
+          removeSkeleton();
+          if (!movies.length) return;
+          renderMoviesList(movies, { append: true }, loadMore);
+        } finally {
+          removeSkeleton();
+        }
+      };
+
+      renderMoviesList(movies, { append: false }, loadMore);
     } catch (error) {
       this.handleSearchError(error);
     } finally {
       removeSkeleton();
     }
+  }
+
+  private async lodeList(page: number) {
+    const { movies, nowPage, totalPages } = await fetchSearchedMovies(
+      page,
+      PageStore.query,
+    );
+
+    PageStore.setPagination(nowPage, totalPages);
+
+    return movies;
   }
 
   private prepareSearchView(searchValue: string) {
@@ -101,7 +115,6 @@ class SearchForm {
   private renderEmptyResult() {
     const empty = createNotFoundElement();
     this.#view.sectionContainer.appendChild(empty);
-    this.moreButton.hide();
   }
 
   private removeNotFoundContainer() {
@@ -114,7 +127,6 @@ class SearchForm {
   private handleSearchError(error: unknown) {
     console.error("검색 중 에러:", error);
     alert("검색 중 문제가 발생했어요");
-    this.moreButton.hide();
   }
 }
 
