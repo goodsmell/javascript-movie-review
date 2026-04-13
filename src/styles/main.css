@@ -22,9 +22,6 @@ section {
   justify-content: center;
 }
 
-main {
-}
-
 header {
   position: relative;
   min-height: 130px;
@@ -101,7 +98,7 @@ button.primary {
   overflow: hidden;
 }
 
-.top-header-conatiner {
+.top-header-container {
   display: flex;
   position: absolute;
   top: 0;
