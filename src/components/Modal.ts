@@ -1,3 +1,5 @@
+import fallbackImg from "../assets/movie_fallback_image.svg";
+
 class Modal {
   #modal: HTMLDivElement;
   #closeBtn: HTMLButtonElement;
@@ -72,12 +74,23 @@ class Modal {
     this.#category.textContent = movie.categoryText;
     this.#rate.textContent = movie.voteAverage.toString();
     this.#detail.textContent = movie.overview;
+    this.#image.alt = movie.title;
+
     this.#image.style.opacity = "0";
-    this.#image.src = movie.posterPath;
+    this.#image.onload = null;
+    this.#image.onerror = null;
+
     this.#image.onload = () => {
       this.#image.style.opacity = "1";
     };
-    this.#image.alt = movie.title;
+
+    this.#image.onerror = () => {
+      this.#image.onerror = null;
+      this.#image.src = fallbackImg;
+      this.#image.style.opacity = "1";
+    };
+
+    this.#image.src = movie.posterPath;
   }
 
   openEmpty() {
@@ -95,4 +108,5 @@ class Modal {
     document.body.style.overflow = "";
   }
 }
+
 export default Modal;
