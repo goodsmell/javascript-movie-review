@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>영화 리뷰</title>
-    <script type="module" crossorigin src="/javascript-movie-review/assets/index-DIDRlBPv.js"></script>
-    <link rel="stylesheet" crossorigin href="/javascript-movie-review/assets/index-D-36DXz3.css">
+    <script type="module" crossorigin src="/javascript-movie-review/assets/index-CwzsxfX1.js"></script>
+    <link rel="stylesheet" crossorigin href="/javascript-movie-review/assets/index-DY1dvkU9.css">
   </head>
   <body>
     <div id="app">
@@ -82,7 +82,6 @@
               <li class="movie-skeleton"></li>
             </ul>
           </section>
-          <button type="button" class="more-button">더 보기</button>
         </main>
       </div>
 
@@ -90,6 +89,88 @@
         <p><img src="/javascript-movie-review/assets/woowacourse_logo-C2VvP7wQ.png" width="180" /></p>
         <p>&copy; 우아한테크코스 All Rights Reserved.</p>
       </footer>
+    </div>
+    <div class="modal-background" id="modalBackground">
+      <div class="modal">
+        <button class="close-modal" id="closeModal">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFcSURBVHgBndVRToMwGAfw7+uyPXOEeQM9gezRGOcNBjzqNHEn8AhiIizxpYDxeZHps7uBu4EcwefpWlsYZsNSyv7JlrS0v0D7FQA2eXx+O5Q/2COUzqzp09wu2yj/wiS94xxu8g4E/3I0nJiCYfzqMGC+gCzRzAjrDjCg4u7I+mNnJEI0Hg09E5ADi3Z7+T1RjubgBklKoTVYhIy90yUHHreBNaB4/J6PZeshfokQ0Pk3rLIUerA7uPBOMtzubYJNwGJ4JXWwqIqFqBC7CVSiOtgErEUNYSWoRWXCZP7OObcVl74EeKQCZdR1CptdVoMyFut839bNxVqwprArs5UnD/cGNTAxBOWmHJiePDQE/3bZ5ORhG7BME4xTOusz0vk0BZtgcfImhEHPagvKXDnnrmqNRRn2yQpWYiLP2oBamOEyX9NiCUj+OZHvQxNwOwFNXdKB4581xtfe2eIXnjrtn65LhjUAAAAASUVORK5CYII=" />
+        </button>
+        <div class="modal-container">
+          <div class="modal-image">
+            <img
+              src="https://image.tmdb.org/t/p/original//pmemGuhr450DK8GiTT44mgwWCP7.jpg"
+            />
+          </div>
+          <div class="modal-description">
+            <div class="modal-header">
+              <h2>인사이드 아웃 2</h2>
+              <p class="category">
+                2024 · 모험, 애니메이션, 코미디, 드라마, 가족
+              </p>
+              <div class="rate-avg">
+                <p>평균</p>
+                <p class="rate">
+                  <img
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAxCAYAAACcXioiAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAKXSURBVHgB7ZhBbtQwFIZ/zyAxu8IN0hNANqh0Q+YG9ASlJyhzgpmeADgBvQG9QbOCJXMDwgnIqoyEqPnjcWmVxElsPU9bKZ/kZuQ4rp/f+/OeA4yMjDxqFCKhvyHh7B+gUWKGhUp5jcATxGPJxb81v67wk39XiMAE8cj+/5riVH/HM0QgigEMn3e8JLcdXPzvOwYJEssDx40ehVNEQFzERrzAj9abU6TqFdYQJIYHls47f6yoBYlhQOa8E0HMogY0xNsYIC9maQ8c944QFrOYiDvFW2eG51KZWdIDy8Ejr/AeQnh7wIhwwzZl+8s2YbvGC/iXCmd8ds1nS85Vcq6qZip9PdNqAMOh2s3ENMUFattUnHKguQAaoYwhBbarLNm3Vq9pdI2GAfZN8hkPEc2q9hAf73ZNWgbtZpdDUM3wahhgLTzDQ0PjE0PovN7tFDFDaQWfN0tMWkLnhs63EI3IsNVDgvtgK+Yj7nzuGtL7GrUJ6hK7N6Jgm3PxRdeg3kRmJ5iz5dgdOXNC2rf4Cq9EthNdVGI9HJ6p/TNxTCM6xOoiqJjTX3kwUfgCWeZdYnURXI3SE1XlmUCGgovfRwBhHrhktp7hFyQJLLHDyukZXkKaTdicYQZo+cN56JyhB5o3kCdoTv/XaIz4vyFAB/4eeBrnE6Eh4ItFSAhlA8cVbCe2FQOfyeBJiAH9scpywNYy56aG3yA1fRJz1/CrhfriX/GQXpUDjow6qLL11IGfB1zxr82he6EOzK7nrser6tJmXPeJz1MHfgao1mSTsz/1KcJoxIqXfT530XI7gwd+BlzzH2rr3u31hIuZD6nb6xhvHOAIdZFPsAcPQsrpBNUuzXAh9XnQzrnipuxxRYuQDRkZGRm5H/4BIkyx5W7xkPAAAAAASUVORK5CYII="
+                    class="star"
+                  /><span>7.7</span>
+                </p>
+              </div>
+            </div>
+
+            <hr />
+            <div class="rating-container">
+              <h2>내 별점</h2>
+              <div class="rating">
+                <div class="rating-stars" id="rating-stars">
+                  <button
+                    class="rating-star"
+                    data-value="1"
+                    type="button"
+                  ></button>
+                  <button
+                    class="rating-star"
+                    data-value="2"
+                    type="button"
+                  ></button>
+                  <button
+                    class="rating-star"
+                    data-value="3"
+                    type="button"
+                  ></button>
+                  <button
+                    class="rating-star"
+                    data-value="4"
+                    type="button"
+                  ></button>
+                  <button
+                    class="rating-star"
+                    data-value="5"
+                    type="button"
+                  ></button>
+                </div>
+
+                <div class="rating-text">
+                  명작이에요 <span class="rating-score" id="score">(0/10)</span>
+                </div>
+              </div>
+            </div>
+            <hr />
+            <div class="plot">
+              <h2 class="plot-tag">줄거리</h2>
+              <p class="detail">
+                13살이 된 라일리의 행복을 위해 매일 바쁘게 머릿속 감정 컨트롤
+                본부를 운영하는 ‘기쁨’, ‘슬픔’, ‘버럭’, ‘까칠’, ‘소심’. 그러던
+                어느 날, 낯선 감정인 ‘불안’, ‘당황’, ‘따분’, ‘부럽’이가 본부에
+                등장하고, 언제나 최악의 상황을 대비하며 제멋대로인 ‘불안’이와
+                기존 감정들은 계속 충돌한다. 결국 새로운 감정들에 의해 본부에서
+                쫓겨나게 된 기존 감정들은 다시 본부로 돌아가기 위해 위험천만한
+                모험을 시작하는데…
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
