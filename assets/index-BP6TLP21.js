@@ -27,6 +27,9 @@
     fetch(link.href, fetchOpts);
   }
 })();
+const API_LANGUAGE = "ko-KR";
+const API_REGION = "ko-KR";
+const INCLUDE_ADULT = false;
 const apiUrl = "https://api.themoviedb.org/3";
 const accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlMDU4NTE0NWE1OTk0MzllZGQ4NmJmYTg0MDlmNjQwYiIsIm5iZiI6MTc3NDg3MDEzOC4zMzQsInN1YiI6IjY5Y2E1ZTdhOWI4YjFiZDdmMDI2Mzg0ZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.OgnU09QNqwQMMpTGRKko_0XG9fKFohD_V4rcq8-s3bQ";
 const REQUEST_OPTIONS = {
@@ -58,19 +61,19 @@ const requestMovieResponse = async (url, errorMessage) => {
 };
 const fetchPopularMovies = async (page) => {
   return requestMovieResponse(
-    `${apiUrl}/movie/popular?language=Ko&region=ko-KR&page=${page}`,
+    `${apiUrl}/movie/popular?language=${API_LANGUAGE}&region=${API_REGION}&page=${page}`,
     "영화 목록을 불러오는 중 에러가 발생했습니다."
   );
 };
 const fetchSearchedMovies = async (page, searchTitle) => {
   return requestMovieResponse(
-    `${apiUrl}/search/movie?query=${encodeURIComponent(searchTitle)}&include_adult=false&language=ko-KR&page=${page}`,
+    `${apiUrl}/search/movie?query=${encodeURIComponent(searchTitle)}&include_adult=${INCLUDE_ADULT}&language=${API_LANGUAGE}&page=${page}`,
     "영화 검색 중 에러가 발생했습니다."
   );
 };
 const fetchMoviesDetail = async (id) => {
   const response = await fetch(
-    `${apiUrl}/movie/${id}?language=ko-KR`,
+    `${apiUrl}/movie/${id}?language=${API_LANGUAGE}`,
     REQUEST_OPTIONS
   );
   if (!response.ok) {
@@ -92,12 +95,13 @@ const mapToThumbnailInfo = (movies) => {
     id: movie.id
   }));
 };
+const SKELETON_COUNT = 20;
 const renderSkeleton = () => {
   const thumbnailList = document.querySelector(".thumbnail-list");
   const fragment = new DocumentFragment();
   const skeleton = document.createElement("div");
   skeleton.className = "movie-skeleton";
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < SKELETON_COUNT; i++) {
     const newNode = skeleton.cloneNode(true);
     fragment.appendChild(newNode);
   }
@@ -217,27 +221,38 @@ const PageStore = {
     this.totalPages = totalPages;
   }
 };
+function requireElement(selector) {
+  const el = document.querySelector(selector);
+  if (!el) throw new Error(`요소를 찾을 수 없습니다: ${selector}`);
+  return el;
+}
+function loadImageWithFallback(image, src, fallbackSrc) {
+  image.style.opacity = "0";
+  image.onload = null;
+  image.onerror = null;
+  image.onload = () => {
+    image.style.opacity = "1";
+  };
+  image.onerror = () => {
+    image.onerror = null;
+    image.src = fallbackSrc;
+    image.style.opacity = "1";
+  };
+  image.src = src;
+}
 class SearchForm {
   #search;
   #view;
   constructor() {
-    const form = document.querySelector(".search");
-    const input = document.querySelector(".search-input");
-    const backgroundContainer = document.querySelector(
-      ".background-container"
-    );
-    const sectionContainer = document.querySelector(".section-container");
-    const sectionTitle = document.querySelector(".section-title");
-    const thumbnailList = document.querySelector(".thumbnail-list");
-    if (!form || !input || !backgroundContainer || !sectionContainer || !sectionTitle || !thumbnailList) {
-      throw new Error("필수 UI 요소를 찾을 수 없습니다.");
-    }
-    this.#search = { form, input };
+    this.#search = {
+      form: requireElement(".search"),
+      input: requireElement(".search-input")
+    };
     this.#view = {
-      backgroundContainer,
-      sectionContainer,
-      sectionTitle,
-      thumbnailList
+      backgroundContainer: requireElement(".background-container"),
+      sectionContainer: requireElement(".section-container"),
+      sectionTitle: requireElement(".section-title"),
+      thumbnailList: requireElement(".thumbnail-list")
     };
   }
   bindEvent() {
@@ -310,47 +325,27 @@ class SearchForm {
 class Logo {
   constructor(onReset) {
     this.onReset = onReset;
-    this.#logo = document.querySelector(".logo");
+    this.#logo = requireElement(".logo");
   }
   #logo;
   bindEvent() {
-    this.#logo?.addEventListener("click", this.onReset);
+    this.#logo.addEventListener("click", this.onReset);
   }
 }
 class Modal {
   #modal;
   #closeBtn;
-  #title;
-  #category;
-  #rate;
-  #detail;
-  #image;
+  #description;
   constructor() {
-    const modal2 = document.querySelector(".modal-background");
-    const closeBtn = document.querySelector(".close-modal");
-    const title = document.querySelector(
-      ".modal-description h2"
-    );
-    const category = document.querySelector(
-      ".modal-description .category"
-    );
-    const rate = document.querySelector(
-      ".modal-description .rate span"
-    );
-    const detail = document.querySelector(
-      ".modal-description .detail"
-    );
-    const image = document.querySelector(".modal-image img");
-    if (!modal2 || !closeBtn || !title || !category || !rate || !detail || !image) {
-      throw new Error("모달 요소를 찾을 수 없습니다.");
-    }
-    this.#modal = modal2;
-    this.#closeBtn = closeBtn;
-    this.#title = title;
-    this.#category = category;
-    this.#rate = rate;
-    this.#detail = detail;
-    this.#image = image;
+    this.#modal = requireElement(".modal-background");
+    this.#closeBtn = requireElement(".close-modal");
+    this.#description = {
+      title: requireElement(".modal-description h2"),
+      category: requireElement(".modal-description .category"),
+      rate: requireElement(".modal-description .rate span"),
+      detail: requireElement(".modal-description .detail"),
+      image: requireElement(".modal-image img")
+    };
   }
   bindEvent() {
     this.#closeBtn.addEventListener("click", () => this.close());
@@ -366,23 +361,21 @@ class Modal {
     });
   }
   fill(movie) {
-    this.#title.textContent = movie.title;
-    this.#category.textContent = movie.categoryText;
-    this.#rate.textContent = movie.voteAverage.toString();
-    this.#detail.textContent = movie.overview;
-    this.#image.style.opacity = "0";
-    this.#image.src = movie.posterPath;
-    this.#image.onload = () => {
-      this.#image.style.opacity = "1";
-    };
-    this.#image.alt = movie.title;
+    const { title, category, rate, detail, image } = this.#description;
+    title.textContent = movie.title;
+    category.textContent = movie.categoryText;
+    rate.textContent = movie.voteAverage.toString();
+    detail.textContent = movie.overview;
+    image.alt = movie.title;
+    loadImageWithFallback(image, movie.posterPath, fallbackImg);
   }
   openEmpty() {
-    this.#title.textContent = "";
-    this.#category.textContent = "";
-    this.#rate.textContent = "";
-    this.#detail.textContent = "";
-    this.#image.style.opacity = "0";
+    const { title, category, rate, detail, image } = this.#description;
+    title.textContent = "";
+    category.textContent = "";
+    rate.textContent = "";
+    detail.textContent = "";
+    image.style.opacity = "0";
     this.#modal.classList.add("active");
     document.body.style.overflow = "hidden";
   }
@@ -393,18 +386,15 @@ class Modal {
 }
 const RATING_LABELS = {
   0: "",
-  1: "최악이에요",
+  1: "최악이예요",
   2: "별로예요",
   3: "보통이에요",
-  4: "좋아요",
+  4: "재미있어요",
   5: "명작이에요"
 };
 class Review {
-  #stars;
-  #scoreEl;
-  #labelEl;
-  #selectedRating = 0;
-  #movieId = 0;
+  #elements;
+  #state;
   #storage;
   constructor(storage) {
     const stars = document.querySelectorAll(".rating-star");
@@ -413,42 +403,41 @@ class Review {
     if (!stars.length || !scoreEl || !labelEl) {
       throw new Error("별점 요소를 찾을 수 없습니다.");
     }
-    this.#stars = stars;
-    this.#scoreEl = scoreEl;
-    this.#labelEl = labelEl;
+    this.#elements = { stars, scoreEl, labelEl };
+    this.#state = { selectedRating: 0, movieId: 0 };
     this.#storage = storage;
   }
   load(movieId) {
-    this.#movieId = movieId;
-    this.#selectedRating = this.#storage.get(movieId);
-    this.#renderStars(this.#selectedRating);
-    this.#updateText(this.#selectedRating);
+    this.#state.movieId = movieId;
+    this.#state.selectedRating = this.#storage.get(movieId);
+    this.#renderStars(this.#state.selectedRating);
+    this.#updateText(this.#state.selectedRating);
   }
   bindEvent() {
-    this.#stars.forEach((star) => {
+    this.#elements.stars.forEach((star) => {
       star.addEventListener("click", () => {
-        this.#selectedRating = Number(star.dataset.value);
-        this.#storage.save(this.#movieId, this.#selectedRating);
-        this.#renderStars(this.#selectedRating);
-        this.#updateText(this.#selectedRating);
+        this.#state.selectedRating = Number(star.dataset.value);
+        this.#storage.save(this.#state.movieId, this.#state.selectedRating);
+        this.#renderStars(this.#state.selectedRating);
+        this.#updateText(this.#state.selectedRating);
       });
       star.addEventListener("mouseover", () => {
         this.#renderStars(Number(star.dataset.value));
       });
     });
     document.querySelector(".rating-stars")?.addEventListener("mouseleave", () => {
-      this.#renderStars(this.#selectedRating);
+      this.#renderStars(this.#state.selectedRating);
     });
   }
   #renderStars(rating) {
-    this.#stars.forEach((star) => {
+    this.#elements.stars.forEach((star) => {
       const value = Number(star.dataset.value);
       star.classList.toggle("filled", value <= rating);
     });
   }
   #updateText(rating) {
-    this.#scoreEl.textContent = `(${rating * 2}/10)`;
-    this.#labelEl.firstChild.textContent = RATING_LABELS[rating] + " ";
+    this.#elements.scoreEl.textContent = `(${rating * 2}/10)`;
+    this.#elements.labelEl.firstChild.textContent = RATING_LABELS[rating] + " ";
   }
 }
 class LocalRatingStorage {
@@ -505,7 +494,7 @@ const movieItem = new MovieItem(async (movieId) => {
     });
     review.load(Number(movieId));
   } catch (error) {
-    throw new Error("dd");
+    throw new Error("영화 상세 정보를 불러오는 중 오류가 발생했습니다.");
   }
 });
 function bindComponentEvents() {
