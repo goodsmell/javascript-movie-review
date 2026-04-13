@@ -55,7 +55,7 @@ function restorePopularViewUI() {
   }
 
   if (sectionTitle) {
-    sectionTitle.textContent = "지금 가장 인기 있는 영화";
+    sectionTitle.textContent = "지금 인기 있는 영화";
   }
 
   notFoundContainer?.remove();
