@@ -1,4 +1,5 @@
 import fallbackImg from "../assets/movie_fallback_image.svg";
+import { requireElement } from "../utils/dom";
 
 class Modal {
   #modal: HTMLDivElement;
@@ -12,37 +13,15 @@ class Modal {
   };
 
   constructor() {
-    const modal = document.querySelector<HTMLDivElement>(".modal-background");
-    const closeBtn = document.querySelector<HTMLButtonElement>(".close-modal");
-    const title = document.querySelector<HTMLHeadingElement>(
-      ".modal-description h2",
-    );
-    const category = document.querySelector<HTMLParagraphElement>(
-      ".modal-description .category",
-    );
-    const rate = document.querySelector<HTMLSpanElement>(
-      ".modal-description .rate span",
-    );
-    const detail = document.querySelector<HTMLParagraphElement>(
-      ".modal-description .detail",
-    );
-    const image = document.querySelector<HTMLImageElement>(".modal-image img");
-
-    if (
-      !modal ||
-      !closeBtn ||
-      !title ||
-      !category ||
-      !rate ||
-      !detail ||
-      !image
-    ) {
-      throw new Error("모달 요소를 찾을 수 없습니다.");
-    }
-
-    this.#modal = modal;
-    this.#closeBtn = closeBtn;
-    this.#description = { title, category, rate, detail, image };
+    this.#modal = requireElement<HTMLDivElement>(".modal-background");
+    this.#closeBtn = requireElement<HTMLButtonElement>(".close-modal");
+    this.#description = {
+      title: requireElement<HTMLHeadingElement>(".modal-description h2"),
+      category: requireElement<HTMLParagraphElement>(".modal-description .category"),
+      rate: requireElement<HTMLSpanElement>(".modal-description .rate span"),
+      detail: requireElement<HTMLParagraphElement>(".modal-description .detail"),
+      image: requireElement<HTMLImageElement>(".modal-image img"),
+    };
   }
 
   bindEvent() {

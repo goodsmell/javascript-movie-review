@@ -3,6 +3,7 @@ import { renderMoviesList } from "../render/movieList";
 import { fetchSearchedMovies } from "../api/fetchMovies";
 import { createNotFoundElement } from "../render/createNotFoundElement";
 import PageStore from "../store";
+import { requireElement } from "../utils/dom";
 
 class SearchForm {
   #search: {
@@ -18,34 +19,15 @@ class SearchForm {
   };
 
   constructor() {
-    const form = document.querySelector<HTMLFormElement>(".search");
-    const input = document.querySelector<HTMLInputElement>(".search-input");
-    const backgroundContainer = document.querySelector<HTMLDivElement>(
-      ".background-container",
-    );
-    const sectionContainer =
-      document.querySelector<HTMLElement>(".section-container");
-    const sectionTitle = document.querySelector<HTMLElement>(".section-title");
-    const thumbnailList =
-      document.querySelector<HTMLElement>(".thumbnail-list");
-
-    if (
-      !form ||
-      !input ||
-      !backgroundContainer ||
-      !sectionContainer ||
-      !sectionTitle ||
-      !thumbnailList
-    ) {
-      throw new Error("필수 UI 요소를 찾을 수 없습니다.");
-    }
-
-    this.#search = { form, input };
+    this.#search = {
+      form: requireElement<HTMLFormElement>(".search"),
+      input: requireElement<HTMLInputElement>(".search-input"),
+    };
     this.#view = {
-      backgroundContainer,
-      sectionContainer,
-      sectionTitle,
-      thumbnailList,
+      backgroundContainer: requireElement<HTMLDivElement>(".background-container"),
+      sectionContainer: requireElement<HTMLElement>(".section-container"),
+      sectionTitle: requireElement<HTMLElement>(".section-title"),
+      thumbnailList: requireElement<HTMLElement>(".thumbnail-list"),
     };
   }
 
