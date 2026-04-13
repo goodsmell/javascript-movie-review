@@ -31,7 +31,7 @@ body.modal-open {
 
 .modal {
   background-color: var(--color-bluegray-90);
-  padding: 20px;
+  padding: 40px 24px;
   border-radius: 16px;
   color: white;
   z-index: 2;
@@ -162,4 +162,48 @@ body.modal-open {
 .rating-container > h2 {
   font-size: 24px;
   font-weight: 600;
+}
+
+@media (max-width: 1120px) {
+  .modal-background {
+    align-items: flex-end;
+  }
+  .modal-header {
+    align-items: center;
+  }
+  .modal {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .modal-container {
+    flex-direction: column;
+  }
+  .modal-image {
+    display: flex;
+    margin: 0 auto;
+  }
+
+  .modal-image img {
+    width: 200px;
+  }
+
+  .modal-description {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .modal {
+    width: 100%;
+
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal-image {
+    display: none;
+  }
 }
