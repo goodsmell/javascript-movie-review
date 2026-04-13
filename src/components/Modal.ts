@@ -3,11 +3,13 @@ import fallbackImg from "../assets/movie_fallback_image.svg";
 class Modal {
   #modal: HTMLDivElement;
   #closeBtn: HTMLButtonElement;
-  #title: HTMLHeadingElement;
-  #category: HTMLParagraphElement;
-  #rate: HTMLSpanElement;
-  #detail: HTMLParagraphElement;
-  #image: HTMLImageElement;
+  #description: {
+    title: HTMLHeadingElement;
+    category: HTMLParagraphElement;
+    rate: HTMLSpanElement;
+    detail: HTMLParagraphElement;
+    image: HTMLImageElement;
+  };
 
   constructor() {
     const modal = document.querySelector<HTMLDivElement>(".modal-background");
@@ -40,11 +42,7 @@ class Modal {
 
     this.#modal = modal;
     this.#closeBtn = closeBtn;
-    this.#title = title;
-    this.#category = category;
-    this.#rate = rate;
-    this.#detail = detail;
-    this.#image = image;
+    this.#description = { title, category, rate, detail, image };
   }
 
   bindEvent() {
@@ -70,35 +68,39 @@ class Modal {
     posterPath: string;
     categoryText: string;
   }) {
-    this.#title.textContent = movie.title;
-    this.#category.textContent = movie.categoryText;
-    this.#rate.textContent = movie.voteAverage.toString();
-    this.#detail.textContent = movie.overview;
-    this.#image.alt = movie.title;
+    const { title, category, rate, detail, image } = this.#description;
 
-    this.#image.style.opacity = "0";
-    this.#image.onload = null;
-    this.#image.onerror = null;
+    title.textContent = movie.title;
+    category.textContent = movie.categoryText;
+    rate.textContent = movie.voteAverage.toString();
+    detail.textContent = movie.overview;
+    image.alt = movie.title;
 
-    this.#image.onload = () => {
-      this.#image.style.opacity = "1";
+    image.style.opacity = "0";
+    image.onload = null;
+    image.onerror = null;
+
+    image.onload = () => {
+      image.style.opacity = "1";
     };
 
-    this.#image.onerror = () => {
-      this.#image.onerror = null;
-      this.#image.src = fallbackImg;
-      this.#image.style.opacity = "1";
+    image.onerror = () => {
+      image.onerror = null;
+      image.src = fallbackImg;
+      image.style.opacity = "1";
     };
 
-    this.#image.src = movie.posterPath;
+    image.src = movie.posterPath;
   }
 
   openEmpty() {
-    this.#title.textContent = "";
-    this.#category.textContent = "";
-    this.#rate.textContent = "";
-    this.#detail.textContent = "";
-    this.#image.style.opacity = "0";
+    const { title, category, rate, detail, image } = this.#description;
+
+    title.textContent = "";
+    category.textContent = "";
+    rate.textContent = "";
+    detail.textContent = "";
+    image.style.opacity = "0";
     this.#modal.classList.add("active");
     document.body.style.overflow = "hidden";
   }

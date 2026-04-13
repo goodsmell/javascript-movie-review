@@ -10,11 +10,12 @@ const RATING_LABELS: Record<number, string> = {
 };
 
 class Review {
-  #stars: NodeListOf<HTMLButtonElement>;
-  #scoreEl: HTMLSpanElement;
-  #labelEl: HTMLElement;
-  #selectedRating = 0;
-  #movieId = 0;
+  #elements: {
+    stars: NodeListOf<HTMLButtonElement>;
+    scoreEl: HTMLSpanElement;
+    labelEl: HTMLElement;
+  };
+  #state: { selectedRating: number; movieId: number };
   #storage: RatingStorage;
 
   constructor(storage: RatingStorage) {
@@ -26,26 +27,25 @@ class Review {
       throw new Error("별점 요소를 찾을 수 없습니다.");
     }
 
-    this.#stars = stars;
-    this.#scoreEl = scoreEl;
-    this.#labelEl = labelEl;
+    this.#elements = { stars, scoreEl, labelEl };
+    this.#state = { selectedRating: 0, movieId: 0 };
     this.#storage = storage;
   }
 
   load(movieId: number) {
-    this.#movieId = movieId;
-    this.#selectedRating = this.#storage.get(movieId);
-    this.#renderStars(this.#selectedRating);
-    this.#updateText(this.#selectedRating);
+    this.#state.movieId = movieId;
+    this.#state.selectedRating = this.#storage.get(movieId);
+    this.#renderStars(this.#state.selectedRating);
+    this.#updateText(this.#state.selectedRating);
   }
 
   bindEvent() {
-    this.#stars.forEach((star) => {
+    this.#elements.stars.forEach((star) => {
       star.addEventListener("click", () => {
-        this.#selectedRating = Number(star.dataset.value);
-        this.#storage.save(this.#movieId, this.#selectedRating);
-        this.#renderStars(this.#selectedRating);
-        this.#updateText(this.#selectedRating);
+        this.#state.selectedRating = Number(star.dataset.value);
+        this.#storage.save(this.#state.movieId, this.#state.selectedRating);
+        this.#renderStars(this.#state.selectedRating);
+        this.#updateText(this.#state.selectedRating);
       });
 
       star.addEventListener("mouseover", () => {
@@ -56,20 +56,20 @@ class Review {
     document
       .querySelector(".rating-stars")
       ?.addEventListener("mouseleave", () => {
-        this.#renderStars(this.#selectedRating);
+        this.#renderStars(this.#state.selectedRating);
       });
   }
 
   #renderStars(rating: number) {
-    this.#stars.forEach((star) => {
+    this.#elements.stars.forEach((star) => {
       const value = Number(star.dataset.value);
       star.classList.toggle("filled", value <= rating);
     });
   }
 
   #updateText(rating: number) {
-    this.#scoreEl.textContent = `(${rating * 2}/10)`;
-    this.#labelEl.firstChild!.textContent = RATING_LABELS[rating] + " ";
+    this.#elements.scoreEl.textContent = `(${rating * 2}/10)`;
+    this.#elements.labelEl.firstChild!.textContent = RATING_LABELS[rating] + " ";
   }
 }
 
