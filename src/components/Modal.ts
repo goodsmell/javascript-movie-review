@@ -1,5 +1,5 @@
 import fallbackImg from "../assets/movie_fallback_image.svg";
-import { requireElement } from "../utils/dom";
+import { requireElement, loadImageWithFallback } from "../utils/dom";
 
 class Modal {
   #modal: HTMLDivElement;
@@ -55,21 +55,7 @@ class Modal {
     detail.textContent = movie.overview;
     image.alt = movie.title;
 
-    image.style.opacity = "0";
-    image.onload = null;
-    image.onerror = null;
-
-    image.onload = () => {
-      image.style.opacity = "1";
-    };
-
-    image.onerror = () => {
-      image.onerror = null;
-      image.src = fallbackImg;
-      image.style.opacity = "1";
-    };
-
-    image.src = movie.posterPath;
+    loadImageWithFallback(image, movie.posterPath, fallbackImg);
   }
 
   openEmpty() {
