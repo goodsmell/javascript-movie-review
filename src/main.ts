@@ -31,7 +31,8 @@ const movieItem = new MovieItem(async (movieId: string) => {
     });
     review.load(Number(movieId));
   } catch (error) {
-    throw new Error("영화 상세 정보를 불러오는 중 오류가 발생했습니다.");
+    modal.close();
+    alert("영화 상세 정보를 불러오는 중 오류가 발생했습니다.");
   }
 });
 
