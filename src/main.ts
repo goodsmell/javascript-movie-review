@@ -64,9 +64,7 @@ function restorePopularViewUI() {
 
 async function resetToPopularView() {
   try {
-    PageStore.mode = "popular";
-    PageStore.query = "";
-    PageStore.page = 1;
+    PageStore.setPopularMode();
 
     restorePopularViewUI();
     renderSkeleton();
