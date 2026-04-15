@@ -24,7 +24,9 @@ class SearchForm {
       input: requireElement<HTMLInputElement>(".search-input"),
     };
     this.#view = {
-      backgroundContainer: requireElement<HTMLDivElement>(".background-container"),
+      backgroundContainer: requireElement<HTMLDivElement>(
+        ".background-container",
+      ),
       sectionContainer: requireElement<HTMLElement>(".section-container"),
       sectionTitle: requireElement<HTMLElement>(".section-title"),
       thumbnailList: requireElement<HTMLElement>(".thumbnail-list"),
@@ -57,12 +59,15 @@ class SearchForm {
       }
 
       const loadMore = async () => {
+        if (PageStore.page >= PageStore.totalPages) return;
         try {
           renderSkeleton();
           const movies = await this.lodeList(PageStore.page + 1);
           removeSkeleton();
           if (!movies.length) return;
           renderMoviesList(movies, { append: true }, loadMore);
+        } catch (error) {
+          alert("검색 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
         } finally {
           removeSkeleton();
         }

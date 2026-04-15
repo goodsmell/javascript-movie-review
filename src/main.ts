@@ -75,12 +75,17 @@ async function resetToPopularView() {
     const thumbnails = mapToThumbnailInfo(movies);
 
     const loadMore = async () => {
+      if (PageStore.page >= PageStore.totalPages) return;
       try {
         renderSkeleton();
         const movies = await onLoadNextPage(PageStore.page + 1);
         removeSkeleton();
         if (!movies.length) return;
         renderMoviesList(movies, { append: true }, loadMore);
+      } catch (error) {
+        alert(
+          "영화 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.",
+        );
       } finally {
         removeSkeleton();
       }
