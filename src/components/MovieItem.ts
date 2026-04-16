@@ -31,7 +31,8 @@ class MovieItem {
     const movieId = movieItem.dataset.movieId;
 
     if (!movieId) {
-      throw new Error("movieId를 찾을 수 없습니다.");
+      console.warn("movieId를 찾을 수 없습니다.", movieItem.dataset);
+      return;
     }
 
     this.#onClickMovie(movieId);
