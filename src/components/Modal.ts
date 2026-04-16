@@ -11,15 +11,22 @@ class Modal {
     detail: HTMLParagraphElement;
     image: HTMLImageElement;
   };
+  #escHandler = (e: KeyboardEvent) => {
+    if (e.key === "Escape") this.close();
+  };
 
   constructor() {
     this.#modal = requireElement<HTMLDivElement>(".modal-background");
     this.#closeBtn = requireElement<HTMLButtonElement>(".close-modal");
     this.#description = {
       title: requireElement<HTMLHeadingElement>(".modal-description h2"),
-      category: requireElement<HTMLParagraphElement>(".modal-description .category"),
+      category: requireElement<HTMLParagraphElement>(
+        ".modal-description .category",
+      ),
       rate: requireElement<HTMLSpanElement>(".modal-description .rate span"),
-      detail: requireElement<HTMLParagraphElement>(".modal-description .detail"),
+      detail: requireElement<HTMLParagraphElement>(
+        ".modal-description .detail",
+      ),
       image: requireElement<HTMLImageElement>(".modal-image img"),
     };
   }
@@ -29,12 +36,6 @@ class Modal {
 
     this.#modal.addEventListener("click", (e) => {
       if (e.target === this.#modal) {
-        this.close();
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
         this.close();
       }
     });
@@ -68,11 +69,14 @@ class Modal {
     image.style.opacity = "0";
     this.#modal.classList.add("active");
     document.body.style.overflow = "hidden";
+
+    document.addEventListener("keydown", this.#escHandler);
   }
 
   close() {
     this.#modal.classList.remove("active");
     document.body.style.overflow = "";
+    document.removeEventListener("keydown", this.#escHandler);
   }
 }
 
